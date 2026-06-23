@@ -372,260 +372,494 @@ Demikian penjelasan laporan praktikum mengenai implementasi sistem autentikasi y
 
 # Laporan Praktikum 5: Pagination dan Pencarian (CodeIgniter 4)
 
-## 1. Deskripsi Praktikum
 
-Praktikum ini berfokus pada peningkatan efisiensi pengelolaan data artikel dalam jumlah besar. Kita mengimplementasikan dua fitur utama: **Pagination** (pemecahan data per halaman) dan **Pencarian** (filter data berdasarkan kata kunci) untuk mempermudah akses informasi di sisi admin.
+Dalam pengembangan aplikasi web yang dinamis, pengelolaan data dalam jumlah besar memerlukan teknik yang efisien agar sistem tetap responsif dan mudah digunakan oleh administrator. Implementasi *pagination* menjadi solusi krusial untuk memecah daftar data yang sangat panjang menjadi beberapa halaman yang lebih ringkas, sehingga beban *server* saat melakukan *query* database dapat dikurangi secara signifikan dan waktu *loading* halaman menjadi jauh lebih cepat.
 
-## 2. Tujuan Praktikum
+Di samping itu, fitur pencarian memberikan kemudahan akses bagi pengguna untuk menemukan informasi spesifik secara instan di tengah tumpukan data yang banyak. Dengan menggabungkan kedua fitur ini—*pagination* untuk navigasi data dan mekanisme pencarian untuk penyaringan data—aplikasi akan memiliki standar pengelolaan data yang profesional. Hal ini tidak hanya meningkatkan kenyamanan pengguna dalam berinteraksi dengan antarmuka admin, tetapi juga menjaga agar pengalaman navigasi tetap konsisten meskipun jumlah data terus bertambah dari waktu ke waktu.
 
-* Memahami konsep **Pagination** untuk membatasi tampilan data yang panjang.
-* Mampu mengimplementasikan fitur **Pencarian** data di CodeIgniter 4.
-* Memanfaatkan *library* bawaan `pager` untuk navigasi halaman yang dinamis.
+* **Pagination**: Proses memecah tampilan data yang panjang menjadi beberapa halaman.
+* **Pencarian**: Fitur untuk memfilter hasil *query* database berdasarkan kata kunci input pengguna.
+* **Pager Library**: Komponen bawaan CodeIgniter 4 untuk menghasilkan *link* navigasi halaman secara otomatis.
 
-## 3. Langkah-langkah Praktikum
+#### 1. Implementasi Pagination
 
-### A. Implementasi Pagination
+Langkah ini dilakukan untuk membatasi tampilan data agar tidak membebani tampilan *browser*.
 
-1. **Modifikasi Controller**: Mengubah method `admin_index` di `Artikel.php` dengan mengganti fungsi `findAll()` menjadi `paginate(10)` untuk membatasi 10 data per halaman.
-2. **Update View**: Menambahkan `<?= $pager->links(); ?>` pada file `admin_index.php` untuk memunculkan navigasi halaman (sebelumnya/sesudahnya).
-
-### B. Implementasi Pencarian
-
-1. **Modifikasi Model**: Mengupdate `ArtikelModel` agar dapat menangani filter data berdasarkan parameter kata kunci (`q`).
-2. **Form Pencarian**: Menambahkan elemen `<form>` berisi `<input type="text" name="q">` pada halaman `admin_index.php` agar admin dapat memasukkan kata kunci.
-3. **Penyelarasan Pager**: Menggunakan fungsi `only(['q'])` pada objek `$pager` agar kata kunci pencarian tetap tersimpan saat pengguna berpindah halaman (navigasi tetap konsisten).
-
-## 4. Konsep Utama
-
-* **Pagination**: Teknik pemecahan daftar data yang panjang menjadi beberapa halaman untuk mempercepat waktu *loading* halaman dan menjaga keterbacaan data.
-* **Query Parameter (`q`)**: Mengambil input dari pengguna melalui URL (via `GET`) untuk memfilter kueri database (menggunakan `WHERE LIKE`).
-* **Library Pager**: *Library* bawaan CodeIgniter 4 yang secara otomatis membuat *link* navigasi berdasarkan jumlah total data yang ditemukan.
-
-## 5. Dokumentasi Screenshot
-
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
-
-* **Screenshot 1**: Halaman Admin Artikel yang menampilkan navigasi halaman (di bawah tabel).
-* **Screenshot 2**: Tampilan saat admin melakukan pencarian data tertentu menggunakan form search.
-* **Screenshot 3**: URL browser saat proses pencarian berlangsung (menunjukkan parameter `?q=...`).
-
-## 6. Pertanyaan dan Tugas
-
-* **Kenapa Pagination Penting?**: Untuk menghindari *loading* halaman yang berat dan memastikan antarmuka tetap bersih saat database berisi ratusan atau ribuan data.
-* **Fungsi `only(['q'])**`: Sangat krusial agar saat kita berpindah dari halaman 1 ke halaman 2, hasil pencarian kita tidak hilang (karena variabel pencarian `q` ikut dibawa dalam link navigasi).
-
----
-
-Berikut adalah draf `README.md` yang disusun khusus untuk **Praktikum 6: Relasi Tabel dan Query Builder** berdasarkan dokumen yang Anda unggah. Anda dapat menambahkan ini ke dalam file `README.md` di repository `Lab7Web` Anda.
-
----
-
-# Laporan Praktikum 6: Relasi Tabel dan Query Builder (CodeIgniter 4)
-
-## 1. Deskripsi Praktikum
-
-Praktikum ini berfokus pada implementasi **relasi antar tabel** dalam database MySQL dan penggunaan **Query Builder** di CodeIgniter 4. Kita akan mengimplementasikan relasi *One-to-Many*, di mana satu kategori dapat memiliki banyak artikel, serta menggunakan fitur *Join* untuk menampilkan data dari dua tabel yang berelasi.
-
-## 2. Tujuan Praktikum
-
-* Memahami konsep relasi *One-to-Many* dalam basis data.
-* Mampu menggunakan **Query Builder** untuk melakukan operasi *JOIN* antar tabel.
-* Mampu menampilkan data artikel beserta nama kategorinya dalam satu tampilan (View).
-
-## 3. Langkah-langkah Praktikum
-
-### A. Persiapan Database
-
-1. **Membuat Tabel Kategori**: Membuat tabel `kategori` untuk menyimpan daftar kategori artikel.
-2. **Relasi Tabel**: Menambahkan kolom `id_kategori` pada tabel `artikel` sebagai *Foreign Key* yang merujuk ke tabel `kategori`.
-
-### B. Implementasi Model dan Query Builder
-
-1. **Membuat KategoriModel**: Membuat `KategoriModel.php` untuk mengelola data kategori.
-2. **Implementasi JOIN**: Memodifikasi `ArtikelModel` dengan menggunakan Query Builder untuk menggabungkan data artikel dengan kategori. Contoh:
+* **Kodingan Controller (`admin_index`)**:
 ```php
-$this->db->table('artikel')
-         ->join('kategori', 'artikel.id_kategori = kategori.id_kategori')
-         ->get()->getResultArray();
+public function admin_index() {
+    $model = new ArtikelModel();
+    $data = [
+        'title' => 'Daftar Artikel',
+        'artikel' => $model->paginate(10), // Membatasi 10 data per halaman
+        'pager' => $model->pager,
+    ];
+    return view('artikel/admin_index', $data);
+}
 
 ```
 
 
+* **Penjelasan**: Fungsi `paginate(10)` secara otomatis mengatur *query* untuk mengambil 10 baris data saja. Variabel `pager` kemudian dikirim ke *view* untuk memunculkan navigasi tombol halaman secara otomatis.
 
-### C. Update View (Form & Detail)
+#### 2. Implementasi Pencarian dan Penyelarasan Pager
 
-1. **Form Tambah/Edit**: Mengubah form input artikel agar menggunakan `<select>` untuk memilih kategori dari database.
-2. **Tampilan Detail**: Memodifikasi file `artikel/detail.php` untuk menampilkan nama kategori yang sesuai dengan artikel tersebut.
+Pencarian memungkinkan admin menyaring data, dan penggunaan `only(['q'])` menjaga konsistensi pencarian saat pindah halaman.
 
-## 4. Konsep Utama
+* **Kodingan Form View**:
+```php
+<form method="get" class="form-search">
+    <input type="text" name="q" value="<?= $q; ?>" placeholder="Cari data">
+    <input type="submit" value="Cari" class="btn btn-primary">
+</form>
+<?= $pager->only(['q'])->links(); ?>
 
-* **Relasi One-to-Many**: Hubungan di mana satu *parent* (kategori) dapat memiliki banyak *child* (artikel).
-* **Query Builder**: Fitur CodeIgniter 4 yang menyederhanakan penulisan query SQL kompleks (seperti `JOIN`) menjadi fungsi-fungsi PHP yang lebih aman dan mudah dibaca.
-* **Integrasi View**: Mengirimkan data kategori ke dalam form agar pengguna dapat memilih kategori artikel secara dinamis.
+```
 
-## 5. Dokumentasi Screenshot
 
-*(Harap lampirkan screenshot berikut untuk melengkapi laporan Anda):*
+* **Penjelasan**: Elemen `form` mengirimkan kata kunci melalui metode `GET`. Fungsi `only(['q'])` sangat krusial karena ia akan memastikan bahwa ketika admin berpindah ke halaman 2, 3, dan seterusnya, parameter pencarian `q` akan tetap terbawa dalam *link* navigasi sehingga hasil filter tidak hilang.
+
+#### 3. Dokumentasi dan Bukti Praktikum
+
+Bagian dokumentasi ini adalah bukti autentik bahwa konfigurasi fitur *pagination* dan pencarian telah berhasil diterapkan dengan benar.
+
+* **Screenshot 1**: Halaman Admin Artikel yang menampilkan navigasi halaman (di bawah tabel).
+* **Screenshot 2**: Tampilan saat admin melakukan pencarian data tertentu menggunakan form search.
+* **Screenshot 3**: URL browser saat proses pencarian berlangsung yang menunjukkan parameter `?q=...` sebagai bukti bahwa kueri filter telah terkirim dengan benar ke sistem.
+
+#### 4. Analisis Konsep Utama
+
+* **Kenapa Pagination Penting?**: Untuk menghindari *loading* halaman yang berat dan memastikan antarmuka tetap bersih saat database berisi ratusan atau ribuan data.
+* **Fungsi `only(['q'])**`: Sangat krusial agar saat kita berpindah dari halaman 1 ke halaman 2, hasil pencarian kita tidak hilang karena variabel pencarian `q` ikut dibawa dalam *link* navigasi.
+
+Demikian penjelasan laporan praktikum mengenai implementasi sistem *pagination* dan pencarian yang telah mencakup tahapan modifikasi *controller*, penyesuaian *view* dengan *pager*, hingga sinkronisasi data pencarian agar aplikasi tetap efisien dan mudah dikelola.
+
+
+# Laporan Praktikum 6: Relasi Tabel dan Query Builder (CodeIgniter 4)
+
+Dalam pengembangan sistem informasi yang kompleks dan berskala besar, pengelolaan data yang saling terhubung antar entitas merupakan fondasi utama untuk mencapai efisiensi basis data. Implementasi relasi *One-to-Many* antara tabel `kategori` dan tabel `artikel` bukan sekadar teknik pengorganisasian data, melainkan strategi krusial untuk menghindari redundansi informasi yang seringkali menjadi masalah utama dalam basis data yang tidak terstruktur. Dengan memastikan setiap artikel terikat pada kategori yang tepat melalui *Foreign Key*, sistem secara otomatis menjamin integritas data dan memudahkan proses klasifikasi konten secara logis dan terukur.
+
+Di sisi lain, penggunaan *Query Builder* dalam framework CodeIgniter 4 memberikan keunggulan teknis yang sangat signifikan bagi pengembang dalam melakukan interaksi dengan basis data. Melalui fitur *Join*, pengembang dapat menarik data dari berbagai tabel yang berelasi dalam satu eksekusi kueri yang efisien dan aman, sehingga meminimalisir kompleksitas penulisan kueri SQL manual yang rentan terhadap kesalahan. *Query Builder* tidak hanya mempercepat waktu pengembangan aplikasi melalui abstraksi fungsi-fungsi PHP yang intuitif, tetapi juga memberikan lapisan perlindungan otomatis terhadap serangan *SQL Injection*, menjadikannya metode standar dalam membangun aplikasi web yang tangguh, aman, dan mudah untuk dikembangkan di masa depan.
+
+* **Relasi One-to-Many**: Hubungan hierarkis di mana satu *parent* (kategori) dapat memiliki banyak *child* (artikel).
+* **Query Builder**: Mekanisme CI4 untuk membangun kueri SQL secara dinamis melalui objek, meningkatkan keamanan dan keterbacaan kode.
+* **Integrasi View**: Sinkronisasi antara data relasional di *database* dengan elemen antarmuka pengguna seperti *dropdown* dan tabel detail.
+
+#### 1. Persiapan Database dan Struktur Relasi
+
+Untuk menghubungkan data, kita harus memastikan tabel `artikel` memiliki kolom `id_kategori` yang menjadi jembatan menuju tabel `kategori`.
+
+* **Struktur Tabel**:
+* **Tabel Kategori**: `id_kategori` (PK), `nama_kategori`.
+* **Tabel Artikel**: `id` (PK), `judul`, `isi`, `id_kategori` (FK).
+
+
+* **Konsep**: Relasi ini memungkinkan kita untuk melakukan *mapping* nama kategori ke artikel tanpa harus menuliskan nama kategori berulang kali di tabel artikel.
+
+#### 2. Implementasi Query Builder (JOIN) pada ArtikelModel
+
+Ini adalah inti dari praktikum ini: melakukan *Join* agar data artikel yang diambil juga menyertakan informasi kategori secara otomatis.
+
+* **Kodingan Implementasi JOIN (`app/Models/ArtikelModel.php`)**:
+```php
+public function getArtikel() {
+    return $this->db->table('artikel')
+                    ->join('kategori', 'artikel.id_kategori = kategori.id_kategori')
+                    ->select('artikel.*, kategori.nama_kategori')
+                    ->get()
+                    ->getResultArray();
+}
+
+```
+
+
+* **Penjelasan Detail**:
+* `$this->db->table('artikel')`: Menetapkan tabel utama yang akan menjadi basis pencarian data.
+* `->join('kategori', 'artikel.id_kategori = kategori.id_kategori')`: Melakukan penggabungan tabel berdasarkan kolom yang sama (ID Kategori). Tipe *Join* secara *default* adalah `INNER JOIN`, yang artinya hanya data yang memiliki pasangan kategori yang akan muncul.
+* `->select('artikel.*, kategori.nama_kategori')`: Mengambil seluruh kolom dari artikel dan menambahkan kolom nama kategori untuk digunakan di *view*.
+* `->get()->getResultArray()`: Eksekusi kueri dan mengembalikan hasil dalam bentuk *array* asosiatif yang siap di-*looping* di sisi *view*.
+
+
+
+#### 3. Integrasi Dropdown pada Form Tambah/Edit
+
+Agar admin dapat memilih kategori, kita perlu mengirimkan data kategori dari *controller* ke *view* dan menampilkannya sebagai *select option*.
+
+* **Kodingan View Form (`app/Views/artikel/form_add.php`)**:
+```php
+<label for="id_kategori">Pilih Kategori:</label>
+<select name="id_kategori" id="id_kategori" required>
+    <option value="">-- Pilih Kategori --</option>
+    <?php foreach($kategori as $k): ?>
+        <option value="<?= $k['id_kategori']; ?>">
+            <?= $k['nama_kategori']; ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+
+```
+
+
+* **Penjelasan Detail**:
+* `foreach($kategori as $k)`: Melakukan iterasi terhadap data kategori yang dikirim dari *controller*.
+* `<option value="<?= $k['id_kategori']; ?>">`: Menetapkan nilai `ID` ke sistem (yang akan disimpan ke *database* di tabel artikel).
+* `<?= $k['nama_kategori']; ?>`: Menampilkan nama kategori yang terbaca oleh admin di layar.
+
+
+
+#### 4. Menampilkan Nama Kategori pada Detail Artikel
+
+Agar tampilan detail artikel lebih informatif, kita menampilkan nama kategorinya.
+
+* **Kodingan View Detail (`app/Views/artikel/detail.php`)**:
+```php
+<article>
+    <h2><?= $artikel['judul']; ?></h2>
+    <p><strong>Kategori:</strong> <?= $artikel['nama_kategori']; ?></p>
+    <p><?= $artikel['isi']; ?></p>
+</article>
+
+```
+
+
+* **Penjelasan**: Karena kita sudah melakukan *Join* di *model*, maka variabel `$artikel` kini sudah berisi indeks `'nama_kategori'`, sehingga kita cukup memanggilnya secara langsung tanpa melakukan *query* tambahan di *view*.
+
+#### 5. Dokumentasi dan Bukti Praktikum
+
+Dokumentasi ini membuktikan keberhasilan penerapan relasi tabel dalam proyek Anda.
 
 * **Screenshot 1**: Struktur tabel `artikel` dan `kategori` di phpMyAdmin (menunjukkan hubungan relasi).
 * **Screenshot 2**: Tampilan Form Tambah/Edit artikel yang menampilkan menu *dropdown* kategori.
 * **Screenshot 3**: Tampilan daftar artikel di admin yang sudah menampilkan "Nama Kategori" (bukan sekadar ID).
 * **Screenshot 4**: Tampilan detail artikel yang mencantumkan kategorinya.
 
-## 6. Pertanyaan dan Tugas
+#### 6. Analisis Konsep Utama
 
 * **Mengapa menggunakan JOIN?**: Untuk menghindari redundansi data dan mempermudah pengambilan data yang saling terkait (misalnya menampilkan nama kategori asli daripada hanya angka ID).
-* **Keuntungan Query Builder**: Selain penulisan yang lebih bersih, Query Builder secara otomatis memproteksi aplikasi dari serangan *SQL Injection*.
+* **Keuntungan Query Builder**: Selain penulisan yang lebih bersih, *Query Builder* secara otomatis memproteksi aplikasi dari serangan *SQL Injection* dengan menggunakan *binding* parameter internal.
 
----
-
-Berdasarkan dokumen **"Modul Praktikum 7: Upload File Gambar"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap untuk melengkapi laporan praktikum Anda di repository `Lab7Web`.
-
----
+Demikian penjelasan laporan praktikum mengenai implementasi sistem relasi tabel dan *Query Builder* yang telah mencakup tahapan persiapan *database*, modifikasi *model* dengan *JOIN*, hingga integrasi *dropdown* dinamis pada *view* untuk manajemen artikel yang lebih profesional.
 
 # Laporan Praktikum 7: Upload File Gambar (CodeIgniter 4)
 
-## 1. Deskripsi Praktikum
+Implementasi fitur *file upload* dalam aplikasi web merupakan kebutuhan esensial untuk mendukung konten yang lebih interaktif dan visual, seperti pada sistem manajemen artikel berita. Dengan memungkinkan pengguna mengunggah gambar secara langsung melalui antarmuka admin, aplikasi menjadi lebih informatif dan menarik bagi pembaca, sekaligus memberikan kontrol penuh kepada administrator dalam mengelola aset media yang melekat pada setiap artikel. Fitur ini mengubah aplikasi dari sekadar penyaji teks statis menjadi platform manajemen konten yang jauh lebih kaya, dinamis, dan terlihat profesional.
 
-Praktikum ini bertujuan untuk menambahkan fungsionalitas **Upload File** pada aplikasi manajemen artikel. Dengan fitur ini, admin dapat melampirkan gambar pada setiap artikel yang dibuat, yang kemudian akan disimpan ke dalam direktori server dan nama filenya dicatat dalam database.
+Selain aspek fungsionalitas, keamanan dalam proses *upload* file menjadi perhatian utama yang harus diperhatikan dengan sangat cermat oleh pengembang. Melalui framework CodeIgniter 4, proses penanganan *file* dilakukan dengan metode yang aman dan terstruktur, mulai dari validasi tipe *file*, pemindahan *file* dari *temporary storage* ke direktori penyimpanan permanen yang ditentukan, hingga pengintegrasian nama *file* tersebut ke dalam *database*. Integrasi sistematis ini memastikan bahwa setiap gambar yang diunggah terasosiasi dengan data artikel yang benar, menciptakan ekosistem data yang terorganisir dan stabil untuk kebutuhan pengembangan aplikasi jangka panjang.
 
-## 2. Tujuan Praktikum
+* **File Upload**: Proses memindahkan file dari komputer klien ke direktori *server* aplikasi.
+* **Validasi**: Tahapan krusial untuk memastikan file yang diunggah sesuai dengan format, tipe MIME, dan aturan yang ditentukan sebelum diproses oleh server.
+* **Storage Path**: Pengaturan direktori penyimpanan di `public/gambar` agar file gambar dapat diakses secara publik melalui *browser*.
+* **Enctype**: Atribut formulir yang wajib ada untuk memungkinkan pengiriman data *binary* (gambar) melalui protokol HTTP.
 
-* Memahami konsep dasar **File Upload** di CodeIgniter 4.
-* Mampu memproses *file* yang diunggah melalui formulir (*form*) ke direktori server.
-* Mengintegrasikan nama *file* hasil unggahan ke dalam tabel `artikel` di database.
+#### 1. Implementasi Logika Upload pada Controller
 
-## 3. Langkah-langkah Praktikum
+Kita memodifikasi *method* `add` di dalam *controller* agar aplikasi mampu memproses *file* gambar yang diunggah melalui *form* secara efisien dan aman.
 
-### A. Penyesuaian Form Input
+* **Kodingan Controller Lengkap (`app/Controllers/Artikel.php`)**:
+```php
+public function add() {
+    // 1. Inisialisasi Service Validasi
+    $validation = \Config\Services::validation();
+    $validation->setRules(['judul' => 'required']);
+    $isDataValid = $validation->withRequest($this->request)->run();
 
-1. **Atribut Enctype**: Menambahkan atribut `enctype="multipart/form-data"` pada tag `<form>` di `form_add.php`. Ini wajib dilakukan agar *form* dapat mengirimkan data berupa file.
-2. **Input File**: Menambahkan elemen `<input type="file" name="gambar">` di dalam formulir.
+    if ($isDataValid) {
+        // 2. Menangkap file dari request input dengan nama 'gambar'
+        $file = $this->request->getFile('gambar');
 
-### B. Pemrosesan di Controller
+        // 3. Memindahkan file ke folder public/gambar
+        // ROOTPATH merujuk pada direktori utama proyek CodeIgniter
+        if ($file->isValid() && !$file->hasMoved()) {
+            $file->move(ROOTPATH . 'public/gambar');
 
-1. **Menangkap File**: Menggunakan `$this->request->getFile('gambar')` untuk mengambil objek file dari *request*.
-2. **Penyimpanan File**: Menggunakan method `$file->move(ROOTPATH . 'public/gambar')` untuk memindahkan file dari *temporary storage* ke direktori tujuan di folder `public/gambar`.
-3. **Database Insertion**: Mengambil nama file asli menggunakan `$file->getName()` dan menyimpannya ke dalam kolom `gambar` di tabel `artikel`.
+            // 4. Inisialisasi Model Artikel
+            $artikel = new ArtikelModel();
 
-## 4. Konsep Utama
+            // 5. Menyimpan data ke database
+            $artikel->insert([
+                'judul'  => $this->request->getPost('judul'),
+                'isi'    => $this->request->getPost('isi'),
+                'slug'   => url_title($this->request->getPost('judul')),
+                'gambar' => $file->getName(), // Mengambil nama file asli
+            ]);
+            return redirect('admin/artikel');
+        }
+    }
+    $title = "Tambah Artikel";
+    return view('artikel/form_add', compact('title'));
+}
 
-* **Multipart Form Data**: Tipe pengkodean yang diperlukan untuk mengirim data *binary* (seperti gambar) melalui HTTP *post request*.
-* **ROOTPATH**: Konstanta di CodeIgniter 4 yang merujuk pada direktori utama proyek, memastikan jalur penyimpanan file (*path*) selalu akurat.
-* **Validation**: Proses pengecekan data (seperti `required` pada judul) tetap berjalan sebelum file diproses untuk menjaga integritas data.
+```
 
-## 5. Dokumentasi Screenshot
 
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
+* **Penjelasan Detail Kodingan**:
+* `$this->request->getFile('gambar')`: Metode ini digunakan untuk mengambil objek *file* yang diunggah melalui formulir.
+* `$file->move(ROOTPATH . 'public/gambar')`: Perintah ini memindahkan *file* dari memori *buffer* sementara ke lokasi permanen di direktori `public/gambar`. Penggunaan `ROOTPATH` sangat penting agar *path* direktori bersifat absolut dan tidak rusak meski aplikasi dipindahkan ke server lain.
+* `$file->getName()`: Fungsi ini mengambil nama *file* asli (misal: `gambar_artikel.jpg`) untuk disimpan ke dalam kolom `gambar` di tabel database. Dengan cara ini, kita hanya menyimpan referensi nama *file*, yang jauh lebih ringan bagi basis data.
 
-* **Screenshot 1**: Form Tambah Artikel yang sudah menampilkan tombol "Telusuri" (Browse/Choose File).
-* **Screenshot 2**: Direktori `public/gambar` yang menunjukkan file gambar berhasil terunggah setelah proses simpan.
-* **Screenshot 3**: Daftar artikel di admin yang menampilkan nama file gambar yang berhasil disimpan di database.
 
-## 6. Pertanyaan dan Tugas
 
-* **Mengapa `enctype="multipart/form-data"` penting?**: Tanpa atribut ini, browser hanya akan mengirimkan *string* (teks biasa) dan tidak akan mengirimkan data *binary* dari file, sehingga file tidak akan pernah sampai ke server.
-* **Keamanan Upload**: Pada implementasi nyata, sangat disarankan untuk menambahkan validasi tipe file (misal hanya `jpg`, `png`, `jpeg`) dan batasan ukuran file agar server tidak penuh oleh file yang tidak diinginkan atau berbahaya.
+#### 2. Penyesuaian View (Form Tambah)
 
----
+Untuk memungkinkan pengiriman data gambar, struktur formulir HTML harus ditingkatkan dengan atribut khusus agar dapat menangani format *binary*.
 
-Berdasarkan dokumen **"Modul Praktikum 8: AJAX"** yang Anda unggah, berikut adalah draf `README.md` yang disusun untuk melengkapi laporan praktikum Anda di repository `Lab11Web` (atau `Lab7Web`).
+* **Kodingan View (`app/Views/artikel/form_add.php`)**:
+```html
+<form action="" method="post" enctype="multipart/form-data">
+    <p>
+        <label for="judul">Judul Artikel</label>
+        <input type="text" name="judul" id="judul" required>
+    </p>
+    <p>
+        <label for="isi">Isi Artikel</label>
+        <textarea name="isi" id="isi"></textarea>
+    </p>
+    <p>
+        <label for="gambar">Upload Gambar Artikel</label>
+        <input type="file" name="gambar" id="gambar">
+    </p>
+    <p>
+        <button type="submit" class="btn btn-primary">Simpan Artikel</button>
+    </p>
+</form>
+
+```
+
+
+* **Penjelasan Detail Kodingan**:
+* `enctype="multipart/form-data"`: Atribut ini **sangat wajib** disertakan pada *tag* `<form>`. Secara *default*, formulir HTML hanya mengirimkan teks (*plain text*). Tanpa atribut *multipart*, data *file* tidak akan terbaca oleh server dan proses *upload* akan selalu gagal (nilai *file* akan `null`).
+* `<input type="file" name="gambar">`: Elemen antarmuka ini memberikan kontrol *browse* kepada admin untuk memilih *file* dari penyimpanan lokal mereka.
+
+
+
+#### 3. Dokumentasi dan Bukti Praktikum
+
+Dokumentasi ini berfungsi sebagai bukti autentik bahwa konfigurasi sistem *upload* gambar telah berhasil diintegrasikan.
+
+* **Screenshot 1**: Form "Tambah Artikel" yang telah memiliki tombol "Telusuri" (Browse/Choose File).
+* **Screenshot 2**: Direktori `public/gambar` di *file manager* yang menunjukkan file gambar berhasil terunggah secara fisik.
+* **Screenshot 3**: Daftar artikel pada halaman *admin* yang menampilkan nama file gambar yang telah sukses tersimpan di database.
+
+#### 4. Analisis Konsep Utama
+
+* **Validasi Tipe File**: Sangat penting untuk menambahkan validasi keamanan (seperti `is_image[gambar]|mime_in[gambar,image/jpg,image/jpeg,image/png]`) di masa depan untuk mencegah *upload* file berbahaya (*script*).
+* **Efisiensi Database**: Kita hanya menyimpan nama *file* (string) di database, bukan gambar tersebut dalam bentuk *BLOB* (biner), karena menyimpan gambar dalam database dapat membuat ukuran *file* database membengkak dengan cepat dan menurunkan performa aplikasi.
+* **ROOTPATH**: Konstanta bawaan CI4 yang memastikan jalur direktori penyimpanan selalu akurat terlepas dari sistem operasi yang digunakan (*Windows/Linux*).
+
+Demikian penjelasan laporan praktikum mengenai implementasi sistem *file upload* yang mencakup tahapan modifikasi *controller*, penyesuaian *form view* dengan atribut *multipart*, hingga manajemen penyimpanan file di direktori server agar aplikasi lebih interaktif dan profesional.
+
+Tentu, saya sangat memahami kebutuhan Anda untuk laporan praktikum yang komprehensif. Berikut adalah penyusunan kembali laporan **Praktikum 8: AJAX** dengan pembahasan yang sangat detail, teknis, dan mendalam pada setiap baris kodenya agar laporan Anda memiliki bobot teknis yang maksimal.
 
 ---
 
 # Laporan Praktikum 8: Implementasi AJAX pada CodeIgniter 4
 
-## 1. Deskripsi Praktikum
+Implementasi *Asynchronous JavaScript and XML* (AJAX) dalam ekosistem CodeIgniter 4 merupakan lompatan besar dalam transformasi antarmuka aplikasi dari statis menjadi dinamis. Secara fundamental, AJAX memutus ketergantungan *browser* terhadap *full-page reload* setiap kali terjadi pembaruan data atau penghapusan entitas. Dalam konteks aplikasi manajemen artikel, hal ini berarti setiap tindakan seperti penghapusan entitas atau pembaruan status dapat dilakukan di latar belakang (*background*) tanpa mengganggu aktivitas pengguna. Dengan berkomunikasi langsung melalui *XMLHttpRequest* atau *Fetch API*, aplikasi dapat menerima respons dari *server* dalam format JSON dan memanipulasi elemen DOM (seperti baris pada tabel) secara instan, sehingga aplikasi terasa jauh lebih modern dan responsif.
 
-Praktikum ini berfokus pada penerapan **AJAX (Asynchronous JavaScript and XML)** dalam aplikasi CodeIgniter 4. Tujuannya adalah membuat antarmuka aplikasi menjadi lebih responsif dengan memungkinkan pembaruan data (seperti menambah, menampilkan, dan menghapus data) tanpa harus melakukan *reload* halaman secara keseluruhan.
+Secara teknis, kekuatan AJAX terletak pada kemampuannya menjaga integritas sesi pengguna sambil memberikan *feedback* visual yang instan. Ketika pengguna menekan tombol hapus, *script* JavaScript akan menangkap *event* tersebut, mengirimkan HTTP Request (seperti metode `DELETE`) ke rute yang telah ditentukan, dan menunggu respons dari *server*. Keberhasilan integrasi ini sangat bergantung pada sinkronisasi yang presisi antara logika *routing* di sisi *backend* (CodeIgniter) dan penanganan *callback* di sisi *frontend* (jQuery). Dokumentasi yang mendalam mengenai alur ini sangat penting agar kita tidak hanya paham cara kerja kodingannya, tetapi juga bagaimana setiap potongan kode memberikan kontribusi pada responsivitas aplikasi secara keseluruhan.
 
-## 2. Tujuan Praktikum
+* **Event Handling**: Teknik penanganan aksi pengguna melalui *event listener* yang terikat pada elemen DOM.
+* **Request Lifecycle**: Alur dari pengiriman HTTP Request, pemrosesan di *Controller*, hingga pengembalian respons (biasanya `JSON`).
+* **DOM Manipulation**: Teknik memperbarui konten tabel secara spesifik setelah server mengonfirmasi keberhasilan operasi data tanpa memuat ulang seluruh halaman.
+* **JSON Exchange**: Format data standar yang digunakan untuk pertukaran informasi ringan dan cepat antara *client* dan *server*.
 
-* Memahami konsep dasar dan alur kerja komunikasi *Asynchronous* menggunakan AJAX.
-* Mampu mengintegrasikan *library* JavaScript/jQuery untuk berkomunikasi dengan *backend* CodeIgniter 4.
-* Meningkatkan pengalaman pengguna (*User Experience*) dengan membuat aplikasi web yang lebih dinamis.
+#### 1. Pembahasan Kodingan: Sisi Frontend (jQuery)
 
-## 3. Konsep Utama AJAX
+Kodingan ini adalah otak dari interaksi *client-side*. Kita menggunakan *event delegation* agar tombol yang dihasilkan secara dinamis oleh AJAX tetap tertangani dengan baik oleh sistem.
 
-* **Asynchronous**: Proses di latar belakang di mana browser mengirimkan permintaan ke server dan menerima respons tanpa menghentikan aktivitas pengguna di halaman web.
-* **Event Trigger**: Aksi pengguna (seperti klik tombol) yang memicu eksekusi *script* JavaScript.
-* **Request & Response**: Komunikasi data menggunakan protokol HTTP (`GET`, `POST`, `DELETE`) di mana data biasanya ditukar dalam format **JSON**.
+```javascript
+$(document).ready(function() {
+    // Event delegation: Mengikat event click pada elemen yang memiliki class .btn-delete
+    // Penggunaan $(document) memastikan elemen yang baru dimuat via AJAX tetap terpantau
+    $(document).on('click', '.btn-delete', function(e) {
+        e.preventDefault(); // Mencegah link melakukan navigasi ke URL default
+        
+        // Mengambil ID artikel dari atribut data-id pada elemen yang diklik
+        var id = $(this).data('id'); 
 
-## 4. Langkah-langkah Praktikum
+        if (confirm('Apakah Anda yakin ingin menghapus artikel ini?')) {
+            // Melakukan request AJAX ke server
+            $.ajax({
+                url: "<?= base_url('artikel/delete/'); ?>" + id, // URL menuju method delete di Controller
+                method: "DELETE", // Metode HTTP DELETE untuk operasi penghapusan
+                dataType: "json", // Memberitahu server bahwa kita mengharapkan format JSON
+                
+                // Fungsi sukses: Dijalankan jika server memberikan respons 200 OK
+                success: function(response) {
+                    if(response.status == 'success') {
+                        alert(response.message); // Notifikasi sukses dari server
+                        loadData(); // Fungsi krusial: Memuat ulang isi tabel tanpa reload halaman
+                    } else {
+                        alert('Gagal menghapus: ' + response.message);
+                    }
+                },
+                
+                // Fungsi error: Dijalankan jika server down, timeout, atau terjadi error 500
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX Error details:", textStatus, errorThrown);
+                    alert('Terjadi kesalahan pada server. Pastikan koneksi stabil.');
+                }
+            });
+        }
+    });
+});
 
-1. **Penyiapan Frontend**: Menggunakan jQuery untuk menangani *event* pada elemen HTML (seperti tombol hapus atau form).
-2. **AJAX Call**: Menggunakan fungsi `$.ajax()` untuk mengirim permintaan ke *route* CodeIgniter 4 yang sesuai.
-3. **Penyelarasan Backend**: Memastikan *method* di Controller dapat menangani permintaan AJAX (misalnya mengembalikan data JSON atau merespons permintaan penghapusan).
-4. **DOM Manipulation**: Mengupdate elemen tabel atau daftar data di halaman setelah menerima respons sukses dari server tanpa melakukan *refresh*.
+```
 
-## 5. Dokumentasi Screenshot
+**Penjelasan Detail:**
 
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
+* `$(document).on('click', ...)`: Ini adalah *best practice* dalam jQuery untuk menangani elemen yang ditambahkan ke DOM setelah halaman dimuat.
+* `url: "..."`: Membangun URL secara dinamis dengan menyematkan ID artikel, memastikan data yang dihapus benar-benar sesuai dengan baris yang diklik.
+* `success`: Bagian ini menangkap objek `response` yang dikirim dari `Controller`. Kita mengecek *key* `status` untuk memastikan apakah penghapusan benar-benar sukses di *database*.
+* `loadData()`: Ini adalah fungsi *helper* yang biasanya berisi kueri AJAX `GET` untuk mengambil data terbaru dan mengisi ulang *tabel*, menciptakan efek "instan".
 
-* **Screenshot 1**: Halaman daftar artikel yang menggunakan mekanisme AJAX.
-* **Screenshot 2**: Tampilan *popup* konfirmasi saat tombol hapus (menggunakan AJAX) ditekan.
-* **Screenshot 3**: *Developer Tools* pada tab **Network** di browser (menunjukkan request `XHR` yang berhasil dijalankan).
-* **Screenshot 4**: Kode *script* jQuery yang digunakan untuk menangani request AJAX.
+#### 2. Pembahasan Kodingan: Sisi Backend (Controller)
 
-## 6. Pertanyaan dan Tugas
+*Controller* berperan sebagai *gateway* yang menerima permintaan AJAX, berinteraksi dengan model, dan memberikan respons kembali ke *client*.
 
-* **Apa keuntungan utama AJAX?**: Aplikasi terasa lebih cepat dan responsif karena hanya bagian data yang perlu diperbarui saja yang dimuat ulang oleh server, bukan seluruh struktur halaman (header, footer, dll).
-* **Bagaimana menangani error pada AJAX?**: Penggunaan blok `error: function (jqXHR, textStatus, errorThrown)` dalam `$.ajax()` sangat penting untuk memberikan umpan balik (seperti *alert* atau log) kepada pengguna jika terjadi kegagalan koneksi atau *server error*.
+```php
+public function delete($id) {
+    // 1. Inisialisasi Model untuk operasi database
+    $artikel = new ArtikelModel();
+    
+    // 2. Eksekusi perintah delete berdasarkan ID yang diterima dari parameter
+    $deleted = $artikel->delete($id);
+
+    // 3. Mengirimkan respons balik dalam format JSON
+    // Menggunakan response->setJSON untuk memastikan header 'Content-Type: application/json'
+    return $this->response->setJSON([
+        'status'  => $deleted ? 'success' : 'error',
+        'message' => $deleted ? 'Data artikel berhasil dihapus dari sistem' : 'Terjadi kesalahan saat menghapus data'
+    ]);
+}
+
+```
+
+**Penjelasan Detail:**
+
+* `$this->response->setJSON(...)`: Fungsi ini sangat vital karena mengubah struktur *array* PHP menjadi objek JSON standar. AJAX di sisi *client* tidak akan bisa membaca respons jika tidak dikirimkan dalam format ini.
+* `delete($id)`: *Query Builder* CI4 melakukan *binding* parameter secara otomatis, yang memberikan perlindungan penuh terhadap upaya *SQL Injection*.
+* **Logika Respons**: Kita menggunakan *ternary operator* untuk memberikan feedback yang dinamis berdasarkan keberhasilan operasi di *model*.
+
+#### 3. Dokumentasi dan Bukti Praktikum
+
+1. **Frontend Setup**: Menyiapkan elemen tabel dengan ID unik agar bisa dimanipulasi dengan `.html()` atau `.append()` dari jQuery.
+2. **Library Inclusion**: Pastikan *script* jQuery telah dipanggil di *layout* (`header` atau `footer`) agar fungsi `$.ajax()` dikenali oleh *browser*.
+3. **Penyelarasan**: Menyesuaikan *route* pada `Config/Routes.php` agar *method* `delete` dapat diakses dengan metode `DELETE` atau `POST`.
+
+#### 4. Analisis Konsep Utama
+
+* **Responsivitas**: Pengguna tidak merasakan "jedah" (layar putih/loading) saat penghapusan data, karena browser tetap aktif memproses permintaan di latar belakang.
+* **Error Handling**: Sangat penting untuk selalu menyertakan blok `error` dalam fungsi `$.ajax()` untuk keperluan *debugging* dan memberikan *feedback* nyata kepada pengguna jika terjadi kendala pada jaringan atau server.
+* **DOM Manipulation**: Kemampuan untuk mengupdate hanya *satu baris* (TR) atau *satu tabel* (TABLE) tanpa harus memuat ulang logo, *header*, *sidebar*, dan *footer* secara berulang kali.
+
+Demikian pembahasan detail mengenai implementasi sistem AJAX pada CodeIgniter 4 yang mencakup alur logika *frontend* hingga *backend*. Apakah Anda memerlukan pembahasan tambahan mengenai bagaimana cara melakukan *pagination* data menggunakan AJAX agar tabel tidak perlu dimuat ulang?
+
+
+# Laporan Praktikum 9: Implementasi AJAX pada CodeIgniter 4
+
+Implementasi *Asynchronous JavaScript and XML* (AJAX) dalam ekosistem CodeIgniter 4 merupakan lompatan besar dalam transformasi antarmuka aplikasi dari statis menjadi dinamis. Secara fundamental, AJAX memutus ketergantungan *browser* terhadap *full-page reload* setiap kali terjadi pembaruan data atau penghapusan entitas. Dalam konteks aplikasi manajemen artikel, hal ini berarti setiap tindakan seperti penghapusan entitas atau pembaruan status dapat dilakukan di latar belakang (*background*) tanpa mengganggu aktivitas pengguna. Dengan berkomunikasi langsung melalui *XMLHttpRequest* atau *Fetch API*, aplikasi dapat menerima respons dari *server* dalam format JSON dan memanipulasi elemen DOM (seperti baris pada tabel) secara instan, sehingga aplikasi terasa jauh lebih modern dan responsif.
+
+Secara teknis, kekuatan AJAX terletak pada kemampuannya menjaga integritas sesi pengguna sambil memberikan *feedback* visual yang instan. Ketika pengguna menekan tombol hapus, *script* JavaScript akan menangkap *event* tersebut, mengirimkan HTTP Request (seperti metode `DELETE`) ke rute yang telah ditentukan, dan menunggu respons dari *server*. Keberhasilan integrasi ini sangat bergantung pada sinkronisasi yang presisi antara logika *routing* di sisi *backend* (CodeIgniter) dan penanganan *callback* di sisi *frontend* (jQuery). Dokumentasi yang mendalam mengenai alur ini sangat penting agar kita tidak hanya paham cara kerja kodingannya, tetapi juga bagaimana setiap potongan kode memberikan kontribusi pada responsivitas aplikasi secara keseluruhan.
+
+* **Event Handling**: Teknik penanganan aksi pengguna melalui *event listener* yang terikat pada elemen DOM.
+* **Request Lifecycle**: Alur dari pengiriman HTTP Request, pemrosesan di *Controller*, hingga pengembalian respons (biasanya `JSON`).
+* **DOM Manipulation**: Teknik memperbarui konten tabel secara spesifik setelah server mengonfirmasi keberhasilan operasi data tanpa memuat ulang seluruh halaman.
+* **JSON Exchange**: Format data standar yang digunakan untuk pertukaran informasi ringan dan cepat antara *client* dan *server*.
+
+#### 1. Pembahasan Kodingan: Sisi Frontend (jQuery)
+
+Kodingan ini adalah otak dari interaksi *client-side*. Kita menggunakan *event delegation* agar tombol yang dihasilkan secara dinamis oleh AJAX tetap tertangani dengan baik oleh sistem.
+
+```javascript
+$(document).ready(function() {
+    // Event delegation: Mengikat event click pada elemen yang memiliki class .btn-delete
+    // Penggunaan $(document) memastikan elemen yang baru dimuat via AJAX tetap terpantau
+    $(document).on('click', '.btn-delete', function(e) {
+        e.preventDefault(); // Mencegah link melakukan navigasi ke URL default
+        
+        // Mengambil ID artikel dari atribut data-id pada elemen yang diklik
+        var id = $(this).data('id'); 
+
+        if (confirm('Apakah Anda yakin ingin menghapus artikel ini?')) {
+            // Melakukan request AJAX ke server
+            $.ajax({
+                url: "<?= base_url('artikel/delete/'); ?>" + id, // URL menuju method delete di Controller
+                method: "DELETE", // Metode HTTP DELETE untuk operasi penghapusan
+                dataType: "json", // Memberitahu server bahwa kita mengharapkan format JSON
+                
+                // Fungsi sukses: Dijalankan jika server memberikan respons 200 OK
+                success: function(response) {
+                    if(response.status == 'success') {
+                        alert(response.message); // Notifikasi sukses dari server
+                        loadData(); // Fungsi krusial: Memuat ulang isi tabel tanpa reload halaman
+                    } else {
+                        alert('Gagal menghapus: ' + response.message);
+                    }
+                },
+                
+                // Fungsi error: Dijalankan jika server down, timeout, atau terjadi error 500
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX Error details:", textStatus, errorThrown);
+                    alert('Terjadi kesalahan pada server. Pastikan koneksi stabil.');
+                }
+            });
+        }
+    });
+});
+
+```
+
+**Penjelasan Detail:**
+
+* `$(document).on('click', ...)`: Ini adalah *best practice* dalam jQuery untuk menangani elemen yang ditambahkan ke DOM setelah halaman dimuat.
+* `url: "..."`: Membangun URL secara dinamis dengan menyematkan ID artikel, memastikan data yang dihapus benar-benar sesuai dengan baris yang diklik.
+* `success`: Bagian ini menangkap objek `response` yang dikirim dari `Controller`. Kita mengecek *key* `status` untuk memastikan apakah penghapusan benar-benar sukses di *database*.
+* `loadData()`: Ini adalah fungsi *helper* yang biasanya berisi kueri AJAX `GET` untuk mengambil data terbaru dan mengisi ulang *tabel*, menciptakan efek "instan".
+
+#### 2. Pembahasan Kodingan: Sisi Backend (Controller)
+
+*Controller* berperan sebagai *gateway* yang menerima permintaan AJAX, berinteraksi dengan model, dan memberikan respons kembali ke *client*.
+
+```php
+public function delete($id) {
+    // 1. Inisialisasi Model untuk operasi database
+    $artikel = new ArtikelModel();
+    
+    // 2. Eksekusi perintah delete berdasarkan ID yang diterima dari parameter
+    $deleted = $artikel->delete($id);
+
+    // 3. Mengirimkan respons balik dalam format JSON
+    // Menggunakan response->setJSON untuk memastikan header 'Content-Type: application/json'
+    return $this->response->setJSON([
+        'status'  => $deleted ? 'success' : 'error',
+        'message' => $deleted ? 'Data artikel berhasil dihapus dari sistem' : 'Terjadi kesalahan saat menghapus data'
+    ]);
+}
+
+```
+
+**Penjelasan Detail:**
+
+* `$this->response->setJSON(...)`: Fungsi ini sangat vital karena mengubah struktur *array* PHP menjadi objek JSON standar. AJAX di sisi *client* tidak akan bisa membaca respons jika tidak dikirimkan dalam format ini.
+* `delete($id)`: *Query Builder* CI4 melakukan *binding* parameter secara otomatis, yang memberikan perlindungan penuh terhadap upaya *SQL Injection*.
+* **Logika Respons**: Kita menggunakan *ternary operator* untuk memberikan feedback yang dinamis berdasarkan keberhasilan operasi di *model*.
+
+#### 3. Dokumentasi dan Bukti Praktikum
+
+1. **Frontend Setup**: Menyiapkan elemen tabel dengan ID unik agar bisa dimanipulasi dengan `.html()` atau `.append()` dari jQuery.
+2. **Library Inclusion**: Pastikan *script* jQuery telah dipanggil di *layout* (`header` atau `footer`) agar fungsi `$.ajax()` dikenali oleh *browser*.
+3. **Penyelarasan**: Menyesuaikan *route* pada `Config/Routes.php` agar *method* `delete` dapat diakses dengan metode `DELETE` atau `POST`.
+
+#### 4. Analisis Konsep Utama
+
+* **Responsivitas**: Pengguna tidak merasakan "jedah" (layar putih/loading) saat penghapusan data, karena browser tetap aktif memproses permintaan di latar belakang.
+* **Error Handling**: Sangat penting untuk selalu menyertakan blok `error` dalam fungsi `$.ajax()` untuk keperluan *debugging* dan memberikan *feedback* nyata kepada pengguna jika terjadi kendala pada jaringan atau server.
+* **DOM Manipulation**: Kemampuan untuk mengupdate hanya *satu baris* (TR) atau *satu tabel* (TABLE) tanpa harus memuat ulang logo, *header*, *sidebar*, dan *footer* secara berulang kali.
 
 ---
 
-Berdasarkan dokumen **"Modul Praktikum 9: Implementasi AJAX Pagination dan Search"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap untuk melengkapi laporan praktikum Anda di repository `Lab7Web`.
-
----
-
-# Laporan Praktikum 9: AJAX Pagination dan Pencarian (CodeIgniter 4)
-
-## 1. Deskripsi Praktikum
-
-Praktikum ini adalah pengembangan lanjutan dari sistem manajemen artikel. Fokus utamanya adalah menggabungkan fitur **Pagination** dan **Pencarian** dengan teknologi **AJAX**. Dengan implementasi ini, proses navigasi antar halaman dan penyaringan data (pencarian) dapat dilakukan secara dinamis tanpa perlu memuat ulang (*reload*) seluruh halaman.
-
-## 2. Tujuan Praktikum
-
-* Mengimplementasikan **AJAX** untuk menangani pagination dan pencarian data.
-* Memahami cara mengembalikan data dari server dalam format **JSON** yang kemudian diproses oleh JavaScript.
-* Meningkatkan performa aplikasi dan kenyamanan pengguna (UX) dengan meminimalkan waktu tunggu saat perpindahan halaman atau pencarian.
-
-## 3. Langkah-langkah Praktikum
-
-### A. Modifikasi Controller
-
-Mengubah method `admin_index()` pada `Artikel.php` agar mampu mendeteksi request AJAX. Jika request adalah AJAX, controller akan mengembalikan data dalam format JSON yang berisi data artikel dan struktur pagination.
-
-### B. Implementasi JavaScript (Frontend)
-
-1. **Fetch Data**: Membuat fungsi JavaScript untuk mengirim request ke URL tujuan (mengandung parameter `q` untuk pencarian dan `page` untuk pagination).
-2. **DOM Manipulation**: Menggunakan jQuery untuk menerima data JSON dari server, lalu memperbarui isi tabel secara otomatis.
-3. **Event Listener**: Menambahkan *listener* pada form pencarian (`submit`) dan *dropdown* kategori (`change`) untuk memicu *update* data tanpa *reload*.
-
-## 4. Konsep Utama
-
-* **JSON Response**: Format data ringan yang digunakan untuk pertukaran data antara server (PHP) dan klien (JavaScript).
-* **Dynamic DOM Update**: Mengganti konten tabel dan navigasi halaman (pager) melalui JavaScript setelah data baru diterima.
-* **Filter Persistence**: Memastikan parameter pencarian (`q`) dan kategori (`kategori_id`) tetap terjaga saat berpindah halaman (navigasi pagination).
-
-## 5. Dokumentasi Screenshot
-
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
-
-* **Screenshot 1**: Tabel artikel yang memperbarui data secara otomatis saat tombol cari ditekan.
-* **Screenshot 2**: Tampilan navigasi halaman yang diperbarui melalui script jQuery (bukan *reload* bawaan browser).
-* **Screenshot 3**: *Network Tab* pada *Developer Tools* (F12) yang menunjukkan request `XHR` dengan parameter pencarian.
-
-## 6. Pertanyaan dan Tugas
-
-* **Mengapa Data Harus JSON?**: Karena format JSON sangat ringan dan mudah diurai oleh JavaScript menjadi objek, sehingga sangat efisien untuk memindahkan data dalam jumlah banyak secara *asynchronous*.
-* **Tantangan dalam AJAX Pagination**: Tantangan terbesarnya adalah menjaga konsistensi state. Misalnya, jika pengguna sedang mencari artikel "Teknologi" di halaman 2, maka link navigasi harus tetap membawa parameter `q=Teknologi` agar data yang dimuat tetap relevan.
-
----
-
-Berdasarkan dokumen **"Modul Praktikum 10: API"** yang Anda unggah, ini adalah draf `README.md` yang disusun secara profesional untuk laporan praktikum Anda. Anda dapat menyalin dan menyesuaikannya ke dalam repository proyek `Lab11Web` atau proyek terkait.
-
----
+**Catatan**: Jika Anda memerlukan detail lebih lanjut mengenai kodingan *pagination* dengan AJAX (Praktikum 9) atau ingin membedah bagian spesifik lainnya dari *controller* atau *view*, silakan beri tahu saya agar saya bisa menyajikannya secara mendetail kembali untuk Anda.
 
 # Laporan Praktikum 10: REST API dengan CodeIgniter 4
 
