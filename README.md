@@ -46,6 +46,105 @@ Untuk menjalankan aplikasi ini, konfigurasi berikut telah diaktifkan pada `php.i
 * **View**: Berfungsi menampilkan antarmuka (UI) kepada pengguna (seperti file `.php` di folder `app/views`).
 * **Controller**: Bertindak sebagai penghubung (*bridge*) yang menerima input dari pengguna, memprosesnya melalui model, dan memberikan respons berupa view.
 
+  Tentu, mari kita kaitkan konsep **Framework CodeIgniter 4 (CI4)** yang terdapat dalam modul praktikum dengan project yang pernah kita bahas sebelumnya.
+
+CodeIgniter 4 menggunakan arsitektur **MVC (Model-View-Controller)**, yang sangat efisien untuk mengorganisir kode program, memisahkan logika bisnis, data, dan tampilan agar lebih mudah dikelola dalam skala project yang lebih besar.
+
+Berikut adalah penjelasan detail mengenai keterkaitan konsep ini dengan project Anda:
+
+### 1. Struktur Folder dan Pengorganisasian Kode
+
+Dalam pengembangan project, struktur direktori sangat krusial agar kode tidak berantakan. Berdasarkan modul, struktur folder dalam CI4 sudah diatur sedemikian rupa:
+
+* 
+**Folder `app/**`: Tempat Anda menaruh semua kode logika utama project, termasuk Controller, Model, dan View.
+
+
+* 
+**Folder `public/**`: Tempat penyimpanan aset statis seperti CSS, gambar, atau file JavaScript yang akan diakses oleh pengguna.
+
+
+* 
+**Implementasi**: Dalam project Anda, pastikan semua *logic* yang berhubungan dengan akses database ditaruh di dalam direktori `Models`, sedangkan untuk mengatur alur data antara view dan model dilakukan di dalam `Controllers`.
+
+
+
+### 2. Implementasi Routing
+
+Routing berfungsi untuk mengatur arah *request* dari URL menuju *controller* yang tepat. Jika project Anda memiliki banyak halaman, Anda tidak perlu membuat file fisik untuk setiap halaman tersebut, cukup definisikan *route*-nya.
+
+Contoh penambahan *route* baru di file `app/Config/Routes.php` untuk project Anda:
+
+```php
+// Definisi route untuk project Anda
+$routes->get('/about', 'Page::about');
+$routes->get('/contact', 'Page::contact');
+
+```
+
+Setiap kali pengguna mengakses `localhost:8080/about`, aplikasi akan otomatis mengarahkannya ke `Method about` di dalam `Class Page`.
+
+### 3. Penggunaan Controller dan View
+
+*Controller* adalah otak dari aplikasi yang menerima input, memproses data (jika perlu memanggil Model), dan kemudian memanggil *View* untuk ditampilkan.
+
+Berikut adalah contoh kodingan *Controller* (`app/Controllers/Page.php`) untuk project Anda:
+
+```php
+<?php 
+namespace App\Controllers;
+
+class Page extends BaseController 
+{
+    public function about() 
+    {
+        // Memanggil View dengan data dinamis
+        return view('about', [ 
+            'title' => 'Halaman About', 
+            'content' => 'Ini adalah detail konten project Anda.' 
+        ]);
+    }
+}
+
+```
+
+Penjelasan rincinya:
+
+* 
+**Namespace**: Menentukan lokasi *controller* agar dikenali oleh sistem CI4.
+
+
+* 
+**Return view**: Fungsi ini bertugas memanggil file `view` yang diinginkan, sekaligus mengirimkan data (seperti `$title` dan `$content`) untuk ditampilkan ke *user*.
+
+
+
+### 4. Membuat Layout yang Konsisten
+
+Agar tampilan project Anda seragam, Anda bisa menggunakan fitur *template* (seperti `header` dan `footer`) sehingga Anda tidak perlu menulis ulang kode HTML yang sama di setiap halaman.
+
+Kodingan untuk `app/Views/about.php` setelah menggunakan *template*:
+
+```php
+<?= $this->include('template/header'); ?>
+
+<h1><?= $title; ?></h1>
+<hr>
+<p><?= $content; ?></p>
+
+<?= $this->include('template/footer'); ?>
+
+```
+
+* 
+**`$this->include()`**: Fungsi ini sangat memudahkan, di mana Anda hanya perlu membuat satu file `header.php` dan `footer.php` yang berisi elemen repetitif, lalu memanggilnya di setiap halaman. Ini memastikan perubahan pada navigasi atau *footer* cukup dilakukan di satu file saja.
+
+
+
+---
+
+Catatan: Pastikan saat menjalankan project, Anda telah mengaktifkan ekstensi PHP yang diperlukan (seperti `php-mysqlnd` untuk database) melalui `php.ini` di XAMPP agar project dapat berjalan lancar.
+
 ---
 Tentu, berdasarkan file **"Web 2 - Modul Praktikum 2.pdf"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap dan profesional untuk tugas praktikum **CRUD (Create, Read, Update, Delete) dengan CodeIgniter 4**.
 
