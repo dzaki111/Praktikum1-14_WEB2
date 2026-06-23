@@ -192,122 +192,183 @@ Demikian penjelasan laporan praktikum yang telah mencakup seluruh tahapan, terma
 
 # Laporan Praktikum 3: View Layout dan View Cell (CodeIgniter 4)
 
-## 1. Deskripsi Praktikum
+Penggunaan *View Layout* dan *View Cell* dalam CodeIgniter 4 merupakan langkah maju dalam menciptakan aplikasi web yang lebih modular, efisien, dan mudah dipelihara. Dengan menerapkan konsep *View Layout*, pengembang dapat menetapkan kerangka halaman standar yang konsisten di seluruh aplikasi, sehingga meminimalisir duplikasi kode yang sering terjadi pada bagian *header*, *footer*, dan elemen navigasi lainnya. Pendekatan ini tidak hanya menghemat waktu dalam penulisan kodingan, tetapi juga memastikan setiap perubahan struktur halaman dapat diterapkan secara global melalui satu file pusat.
 
-Praktikum ini mempelajari teknik efisiensi tampilan dalam **CodeIgniter 4** menggunakan dua konsep utama: **View Layout** (untuk standarisasi struktur halaman) dan **View Cell** (untuk komponen UI modular yang dapat digunakan kembali).
+Di sisi lain, *View Cell* memberikan fleksibilitas tambahan dengan memungkinkan pembuatan komponen UI yang bersifat modular dan mandiri. Elemen-elemen yang sering muncul di berbagai bagian situs, seperti widget artikel terkini atau kotak informasi, kini dapat dikelola sebagai satu kesatuan logika yang terpisah dari *controller* utama. Integrasi kedua fitur ini menciptakan alur pengembangan yang jauh lebih bersih, di mana setiap komponen aplikasi memiliki batasan yang jelas, meningkatkan *readability* kode, serta mempercepat proses pengembangan aplikasi skala besar.
 
-## 2. Tujuan Praktikum
+* **View Layout**: Teknik standarisasi struktur halaman menggunakan file *main template* dan *sections*.
+* **View Cell**: Komponen UI modular yang dapat digunakan kembali dengan logika data mandiri.
+* **Modularitas**: Meningkatkan *reusability* (kemampuan guna ulang) komponen di berbagai halaman web.
 
-* Mengimplementasikan **View Layout** agar struktur halaman (seperti header, footer, dan sidebar) tidak perlu ditulis berulang kali.
+#### 1. Membuat Layout Utama (`app/Views/layout/main.php`)
 
+Konsep *View Layout* menggunakan sistem *extends* dan *section* untuk membungkus konten.
 
-* Memahami dan menggunakan **View Cell** untuk memanggil komponen UI secara modular, seperti menampilkan widget artikel terkini.
+* **Kodingan Layout**:
+```php
+<!DOCTYPE html>
+<html>
+<head><title><?= $title ?? 'My Website' ?></title></head>
+<body>
+    <header><h1>Layout Sederhana</h1></header>
+    <?= $this->renderSection('content') ?> </body>
+</html>
 
-
-
-## 3. Langkah-langkah Praktikum
-
-1. **Membuat Layout Utama**: Membuat file `main.php` di dalam `app/Views/layout/` sebagai kerangka dasar seluruh halaman web.
-
-
-2. **Modifikasi File View**: Menggunakan perintah `<?= $this->extend('layout/main') ?>` dan `<?= $this->section('content') ?>` pada file view seperti `home.php` untuk menghubungkan konten ke layout utama.
-
-
-3. **Membuat Class View Cell**: Membuat file `ArtikelTerkini.php` di dalam folder `app/Cells/` untuk memproses logika data artikel yang akan ditampilkan pada widget.
-
-
-4. **Membuat View Komponen**: Membuat file `artikel_terkini.php` di dalam `app/Views/components/` untuk menentukan bagaimana daftar artikel ditampilkan di dalam sidebar.
+```
 
 
+* **Penjelasan**: `renderSection('content')` berfungsi sebagai titik di mana konten dari *view* spesifik (seperti halaman Home atau Artikel) akan disisipkan ke dalam kerangka *layout* utama.
 
-## 4. Konsep Utama
+#### 2. Implementasi View Cell (`app/Cells/ArtikelTerkini.php`)
 
-* **View Layout**: Memungkinkan pengembang untuk membuat satu template dasar dan menggunakan fitur `renderSection` untuk menyisipkan konten dinamis dari tiap halaman.
+*View Cell* memungkinkan logika data dipisahkan dari *controller* utama untuk elemen-elemen kecil.
 
+* **Kodingan Class Cell**:
+```php
+namespace App\Cells;
+class ArtikelTerkini {
+    public function render() {
+        $model = new \App\Models\ArtikelModel();
+        $artikel = $model->findAll(5); // Ambil 5 artikel terbaru
+        return view('components/artikel_terkini', ['artikel' => $artikel]);
+    }
+}
 
-* **View Cell**: Berfungsi untuk memanggil tampilan dalam bentuk komponen yang dapat digunakan ulang, sangat efektif untuk elemen yang sering muncul di banyak halaman seperti sidebar atau widget.
-
-
-
-## 5. Dokumentasi Screenshot
-
-*(Harap lampirkan screenshot berikut untuk melengkapi laporan Anda):*
-
-* **Screenshot 1**: Tampilan halaman web setelah menerapkan `layout/main.php`.
-* **Screenshot 2**: Tampilan widget "Artikel Terkini" yang dihasilkan melalui `view_cell`.
-
-
-* **Screenshot 3**: Struktur folder `app/Cells` dan `app/Views/components`.
-
-## 6. Jawaban Pertanyaan Tugas
-
-* **Manfaat View Layout**: Mempermudah pemeliharaan kode (maintainability) karena perubahan pada struktur (header/footer) hanya perlu dilakukan di satu file layout utama.
+```
 
 
-* **Perbedaan View Cell & View Biasa**: View biasa digunakan untuk satu halaman penuh, sedangkan View Cell digunakan untuk komponen kecil/modular yang memiliki logika data sendiri dan dapat dipanggil berulang kali di berbagai tempat.
+* **Penjelasan**: *Class* ini bertugas mengambil data dari *Model* secara langsung, sehingga saat kita memanggil *cell* ini, ia sudah membawa data yang diperlukan tanpa membebani *controller* utama.
+
+#### 3. Memanggil Komponen di View
+
+Penggunaan *View Cell* pada halaman utama sangat praktis untuk memanggil widget.
+
+* **Kodingan Pemanggilan**:
+```php
+<?= view_cell('\App\Cells\ArtikelTerkini::render') ?>
+
+```
 
 
+* **Penjelasan**: Baris kode ini secara otomatis menjalankan fungsi `render()` dalam *class* `ArtikelTerkini` dan menampilkan hasil *view*-nya di lokasi pemanggilan tersebut, menjadikan tampilan web jauh lebih dinamis.
+
+#### 4. Dokumentasi dan Bukti Praktikum
+
+Dokumentasi ini membuktikan keberhasilan penerapan konsep modular pada proyek Anda.
+
+* **Screenshot 1**: Halaman utama yang telah menerapkan `layout/main.php`.
+* **Screenshot 2**: Tampilan widget "Artikel Terkini" yang dihasilkan melalui *view_cell*.
+* **Screenshot 3**: Struktur folder `app/Cells` dan `app/Views/components` di VS Code.
+
+#### 5. Analisis Konsep Utama
+
+* **View Layout**: Memberikan struktur halaman yang terstandarisasi. Perubahan pada struktur dasar (seperti penambahan menu navigasi) hanya perlu dilakukan pada satu file `layout/main.php`.
+* **View Cell vs View Biasa**: *View* biasa digunakan untuk merender seluruh halaman, sementara *View Cell* digunakan untuk komponen UI kecil yang memiliki logika data sendiri (independen) dan dapat dipanggil di banyak tempat tanpa perlu mengulang *query* di setiap *controller*.
 
 ---
 
-Berikut adalah draf `README.md` yang lengkap untuk **Praktikum 4: Modul Login (Authentication)** berdasarkan dokumen **"Web 2 - Modul Praktikum 4.pdf"**.
-
----
+*Demikian penjelasan mengenai penerapan View Layout dan View Cell yang telah meningkatkan efisiensi dan modularitas aplikasi Anda.*
 
 # Laporan Praktikum 4: Modul Login (Authentication & Filter)
 
-## 1. Deskripsi Praktikum
+Sistem autentikasi merupakan fondasi keamanan yang mutlak dalam pengembangan aplikasi web untuk membatasi akses pada fitur-fitur sensitif. Melalui sistem ini, pengembang dapat memastikan bahwa hanya pengguna yang sah, yang kredensialnya terverifikasi dalam database, yang diberikan izin untuk mengakses modul administratif. Implementasi ini menjamin bahwa setiap data yang dikelola tetap terlindungi dari akses pihak yang tidak bertanggung jawab.
 
-Praktikum ini membahas implementasi sistem autentikasi pengguna (*Login System*) pada framework CodeIgniter 4. Fokus utamanya adalah mengamankan akses ke halaman tertentu (seperti halaman admin) menggunakan sistem **Filter** dan **Session**.
+Selain aspek keamanan, penggunaan *Filter* dan *Session* memberikan fleksibilitas dalam pengelolaan alur akses pengguna. *Filter* berfungsi sebagai *middleware* yang secara otomatis melakukan validasi status login sebelum setiap permintaan halaman diproses, sementara *session* menjaga integritas status pengguna tetap tersimpan selama sesi berlangsung. Kombinasi ini menciptakan pengalaman aplikasi yang profesional, di mana pengguna tidak perlu melakukan proses login berulang kali, namun sistem tetap mampu mengamankan halaman secara otomatis.
 
-## 2. Tujuan Praktikum
+* **Database & Tabel User**: Penyimpanan kredensial pengguna untuk verifikasi login.
+* **Authentication**: Proses validasi identitas berdasarkan data *user* di database.
+* **Filter (Middleware)**: Penjaga akses yang otomatis memblokir pengguna yang belum login.
+* **Session**: Objek penyimpan status login pengguna yang persisten.
 
-* Memahami konsep dasar *Authentication* (Auth) dalam aplikasi web.
-* Mampu menerapkan **Filter** di CodeIgniter 4 untuk membatasi akses halaman.
-* Mampu mengelola *Session* pengguna untuk menjaga status login.
+#### 1. Persiapan Database dan Pembuatan Tabel
 
-## 3. Persiapan Database
+Sistem login memerlukan penyimpanan data pengguna yang aman. Kita perlu membuat tabel `user` untuk menampung *username* dan *password* yang nantinya akan divalidasi.
 
-Data pengguna disimpan dalam tabel `user` dengan struktur berikut:
+* **Struktur Tabel `user**`:
+* `id`: INT, 11, Primary Key, Auto Increment.
+* `username`: VARCHAR(200).
+* `useremail`: VARCHAR(200).
+* `userpassword`: VARCHAR(200).
 
-* **id**: INT, Primary Key, Auto Increment
-* **username**: VARCHAR(200)
-* **useremail**: VARCHAR(200)
-* **userpassword**: VARCHAR(200)
 
-## 4. Langkah-langkah Praktikum
+* **Perintah SQL**:
+```sql
+CREATE TABLE user (
+    id INT(11) auto_increment,
+    username VARCHAR(200) NOT NULL,
+    useremail VARCHAR(200),
+    userpassword VARCHAR(200),
+    PRIMARY KEY(id)
+);
 
-1. **Membuat Tabel User**: Menyiapkan tabel `user` di database MySQL.
-2. **Membuat UserModel**: Membuat `UserModel.php` di `app/Models/` untuk menangani proses *query* data pengguna.
-3. **Konfigurasi Route**: Mengatur `Routes.php` untuk membatasi akses grup `admin` dengan menerapkan `filter => 'auth'`.
-4. **Implementasi Login**: Membuat controller untuk memproses verifikasi *username* dan *password*, serta menyimpan *session* jika login berhasil.
-5. **Implementasi Logout**: Membuat method `logout()` yang menghancurkan *session* pengguna (`session()->destroy()`) dan mengarahkan kembali ke halaman login.
+```
 
-## 5. Konsep Utama
 
-* **Auth (Authentication)**: Proses verifikasi identitas pengguna untuk memastikan hanya pengguna yang sah yang bisa masuk.
-* **Filter**: Fitur di CodeIgniter 4 yang bertindak sebagai "penjaga pintu" (middleware). Filter akan memeriksa apakah pengguna sudah login sebelum mengizinkan mereka mengakses URL tertentu (seperti `admin/artikel`).
-* **Session**: Objek yang digunakan untuk menyimpan informasi pengguna selama mereka berinteraksi dengan situs, sehingga pengguna tidak perlu login berulang kali di setiap halaman.
 
-## 6. Dokumentasi Screenshot
+#### 2. Membuat UserModel
 
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
+*Model* bertindak sebagai representasi data pengguna. Kita membuat `UserModel.php` di `app/Models/` untuk menangani proses *query* data.
 
-* **Screenshot 1**: Struktur tabel `user` di phpMyAdmin.
-* **Screenshot 2**: Tampilan halaman `Login` saat pertama kali diakses.
+* **Kodingan Model**:
+```php
+namespace App\Models;
+use CodeIgniter\Model;
+
+class UserModel extends Model {
+    protected $table = 'user';
+    protected $primaryKey = 'id';
+    protected $allowedFields = ['username', 'useremail', 'userpassword'];
+}
+
+```
+
+
+* **Penjelasan**: *Model* ini menyediakan akses ke tabel `user`. Penggunaan `$allowedFields` sangat krusial untuk keamanan, memastikan hanya kolom yang ditentukan yang dapat diproses oleh sistem.
+
+#### 3. Implementasi Filter (Penjaga Pintu)
+
+*Filter* digunakan untuk membatasi akses ke grup `admin` agar tidak dapat diakses oleh publik tanpa izin.
+
+* **Kodingan `app/Config/Routes.php**`:
+```php
+$routes->group('admin', ['filter' => 'auth'], function ($routes) {
+    $routes->get('artikel', 'Artikel::admin_index');
+    $routes->add('artikel/add', 'Artikel::add');
+    $routes->add('artikel/edit/(:any)', 'Artikel::edit/$1');
+    $routes->get('artikel/delete/(:any)', 'Artikel::delete/$1');
+});
+
+```
+
+
+* **Penjelasan**: Fungsi `['filter' => 'auth']` memastikan bahwa sistem akan melakukan pengecekan status login setiap kali URL di dalam grup `admin` diakses. Jika *session* tidak ditemukan, pengguna secara otomatis diarahkan ke halaman login.
+
+#### 4. Manajemen Sesi dan Logout
+
+Sistem harus mampu mengakhiri sesi dengan aman saat pengguna menekan tombol *logout*.
+
+* **Kodingan Controller (`app/Controllers/User.php`)**:
+```php
+public function logout() {
+    session()->destroy(); // Menghapus seluruh data session di server
+    return redirect()->to('/user/login'); // Kembali ke halaman login
+}
+
+```
+
+
+* **Penjelasan**: Fungsi `session()->destroy()` sangat vital dalam keamanan aplikasi karena menghapus semua data *session* yang tersimpan di server, sehingga sistem akan menganggap pengguna telah keluar sepenuhnya dari aplikasi.
+
+#### 5. Dokumentasi dan Bukti Praktikum
+
+Dokumentasi ini membuktikan bahwa konfigurasi sistem autentikasi telah berhasil diterapkan.
+
+* **Screenshot 1**: Struktur tabel `user` di phpMyAdmin, yang menunjukkan kolom `id`, `username`, `useremail`, dan `userpassword`.
+* **Screenshot 2**: Tampilan halaman `Login` saat pertama kali diakses, siap menerima input pengguna.
 * **Screenshot 3**: Tampilan pesan error atau pengalihan halaman saat mencoba mengakses `admin/artikel` tanpa login.
-* **Screenshot 4**: Kode pada `Config/Routes.php` yang menunjukkan penggunaan filter.
+* **Screenshot 4**: Kode pada `Config/Routes.php` yang menunjukkan penerapan `filter => 'auth'`.
 
-## 7. Pertanyaan dan Tugas
-
-* **Mengapa Filter penting?**: Filter sangat penting untuk keamanan aplikasi karena mencegah pengguna yang tidak terdaftar (atau belum login) mengakses halaman administratif yang sensitif.
-* **Fungsi `session()->destroy()**`: Fungsi ini menghapus semua data *session* yang tersimpan di server, sehingga sistem akan menganggap pengguna sudah keluar (logout) dan memaksa mereka login kembali jika ingin mengakses halaman yang terlindungi.
-
----
-
-Berikut adalah draf `README.md` yang disusun khusus untuk **Praktikum 5: Pagination dan Pencarian** berdasarkan dokumen yang Anda unggah. Anda bisa menambahkannya ke dalam file `README.md` di repository `Lab7Web` Anda.
-
----
+Demikian penjelasan laporan praktikum mengenai implementasi sistem autentikasi yang telah mencakup tahapan persiapan *database*, konfigurasi *filter* keamanan, hingga manajemen *session* pengguna secara komprehensif.
 
 # Laporan Praktikum 5: Pagination dan Pencarian (CodeIgniter 4)
 
