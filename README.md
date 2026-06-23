@@ -95,13 +95,6 @@ Untuk kenyamanan pengembangan, pastikan file `.env` di direktori utama Anda diko
 
 # Laporan Praktikum 2: Framework Lanjutan (CRUD) - CodeIgniter 4
 
-Mohon maaf atas ketidaktelitian saya sebelumnya. Anda benar, aspek **Database** adalah inti dari **Praktikum 2** yang membedakannya dengan praktikum sebelumnya.
-
-Berikut adalah laporan yang telah saya perbarui dengan memasukkan penjelasan teknis mengenai pembuatan database, tabel, dan konfigurasi koneksi secara mendalam ke dalam struktur laporan Anda.
-
----
-
-### Laporan Praktikum 2: Framework Lanjutan (CRUD) - CodeIgniter 4
 
 #### 1. Persiapan Database dan Konfigurasi Koneksi
 
