@@ -959,195 +959,426 @@ Pengujian adalah tahap krusial untuk memastikan API bekerja sesuai ekspektasi ta
 
 Demikian pembahasan detail mengenai implementasi REST API dengan CodeIgniter 4. Apakah Anda membutuhkan pembahasan lebih lanjut mengenai cara menambahkan *token* otentikasi agar API Anda lebih aman dari akses ilegal?
 
-# Laporan Praktikum 11: Frontend API dengan VueJS 3
 
-## 1. Deskripsi Praktikum
 
-Praktikum ini berfokus pada implementasi **VueJS 3** untuk membangun *Frontend* yang interaktif. Aplikasi ini berperan sebagai *Client* yang mengambil dan menampilkan data dari REST API (yang dibangun pada praktikum sebelumnya). Fokus utamanya adalah penggunaan *Reactive Data Binding* dan *Component-Based Architecture*.
+# Laporan Praktikum 11: Membangun Antarmuka Frontend Dinamis dengan VueJS 3
 
-## 2. Tujuan Praktikum
+Implementasi *framework* VueJS 3 dalam pengembangan antarmuka web modern merupakan langkah krusial untuk menciptakan pengalaman pengguna yang jauh lebih interaktif dan responsif dibandingkan dengan metode pengembangan tradisional. Sebagai *framework* yang berbasis pada arsitektur komponen, VueJS memungkinkan pengembang untuk memecah antarmuka yang kompleks menjadi bagian-bagian kecil yang mandiri, sehingga pengelolaan kode menjadi jauh lebih terstruktur, mudah diuji, dan dapat digunakan kembali (*reusable*). Dengan fitur *reactive data binding*, setiap perubahan data di sisi *logic* akan secara otomatis tercermin pada tampilan tanpa memerlukan manipulasi DOM manual yang rumit, menciptakan aplikasi yang terasa sangat hidup dan cepat.
 
-* Memahami konsep dasar *framework* JavaScript **VueJS 3**.
-* Mampu membangun antarmuka web yang dinamis dan interaktif.
-* Mengintegrasikan *frontend* VueJS dengan *backend* melalui komunikasi HTTP (menggunakan `Axios` atau `Fetch API`).
+Di sisi lain, integrasi VueJS dengan REST API yang telah dibangun sebelumnya mengubah paradigma pengembangan aplikasi dari *server-side rendering* menjadi *client-side rendering* yang efisien. Aplikasi kini berperan sebagai *client* yang secara mandiri melakukan *request* data melalui protokol HTTP, memproses respons JSON, dan menyajikannya secara dinamis kepada pengguna. Penguasaan terhadap siklus hidup (*lifecycle hooks*) dalam VueJS, seperti `onMounted()`, menjadi sangat penting agar data dapat disinkronkan secara mulus segera setelah komponen dimuat. Integrasi ini tidak hanya meningkatkan estetika dan responsivitas aplikasi, tetapi juga memperkuat fundamental pengembang dalam membangun sistem *Single Page Application* (SPA) yang modern dan profesional.
 
-## 3. Konsep Utama
+* **Reactive Data Binding**: Mekanisme otomatis di mana perubahan pada *state* data JavaScript akan langsung memperbarui elemen HTML yang terhubung, menjaga konsistensi antara data dan tampilan.
+* **Component-Based Architecture**: Strategi pengembangan dengan membangun UI sebagai kumpulan komponen modular, yang meningkatkan *maintainability* dan efisiensi kode.
+* **Lifecycle Hooks**: Fungsi khusus seperti `onMounted()` yang dieksekusi secara otomatis pada fase tertentu dari siklus hidup komponen, sangat krusial untuk pemanggilan API saat aplikasi dimuat.
+* **Single Page Application (SPA)**: Pola pengembangan web di mana aplikasi hanya memuat satu halaman HTML, dan perpindahan konten dilakukan melalui injeksi data dinamis tanpa perlu melakukan *reload* browser.
 
-* **Reactive Data Binding**: Fitur di mana data di JavaScript terhubung langsung dengan tampilan di HTML. Jika data berubah, tampilan akan otomatis terupdate.
-* **Component-Based Architecture**: Aplikasi dibangun dengan memecah UI menjadi bagian-bagian kecil yang mandiri (komponen), sehingga lebih mudah dikelola dan digunakan kembali.
-* **Single Page Application (SPA)**: Pola pengembangan web di mana aplikasi dimuat dalam satu halaman saja, sehingga perpindahan antar menu terasa lebih cepat dan tanpa *reload* browser.
+#### 1. Pembahasan Kodingan: Inisialisasi State dan Komunikasi API
 
-## 4. Langkah-langkah Praktikum
+Pada bagian ini, kita akan menggunakan *Composition API* untuk mengelola data artikel yang diambil dari server.
 
-1. **Inisialisasi**: Membuat proyek baru dengan VueJS 3 di dalam direktori `lab8_vuejs`.
-2. **Component Setup**: Membuat komponen UI untuk menampilkan daftar artikel (misalnya `Artikel.js` atau komponen berbasis `.vue`).
-3. **Data Integration**: Menggunakan *lifecycle hook* seperti `mounted()` untuk memanggil API dan mengisi data ke dalam *state* aplikasi.
-4. **Interaksi UI**: Membuat *event handler* (seperti `submit` untuk tambah data atau `click` untuk hapus data) yang mengirimkan *request* ke *endpoint* API.
-
-## 5. Dokumentasi Screenshot
-
-*(Pastikan Anda melampirkan screenshot berikut untuk laporan Anda):*
-
-* **Screenshot 1**: Tampilan daftar artikel yang berhasil dimuat oleh VueJS.
-* **Screenshot 2**: Struktur folder proyek VueJS Anda di VS Code.
-* **Screenshot 3**: *Console log* pada *Developer Tools* (F12) saat berhasil menerima data JSON dari server.
-* **Screenshot 4**: Tampilan modal atau form tambah data yang sudah berfungsi secara reaktif.
-
-## 6. Pertanyaan dan Tugas
-
-* **Apa itu VueJS?**: Sebuah *framework* JavaScript untuk membangun antarmuka pengguna (*User Interface*) yang interaktif. Keunggulan utamanya adalah sintaksis yang sederhana, performa yang ringan, dan ekosistem yang sangat kaya.
-* **Mengapa aplikasi terasa lebih responsif?**: Karena VueJS memproses data di sisi klien (*client-side*). Setelah data awal diambil, interaksi berikutnya tidak harus selalu menunggu server membuat ulang halaman HTML, melainkan cukup memperbarui bagian data yang berubah saja.
-
----
-
-Berdasarkan dokumen **"Modul Praktikum 12: VueJS Komponen dan Routing (Single Page Application)"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap untuk melengkapi laporan praktikum Anda di repository `Lab8VueJS`.
-
----
-
-# Laporan Praktikum 12: VueJS Komponen dan Routing (SPA)
-
-## 1. Deskripsi Praktikum
-
-Praktikum ini berfokus pada transformasi aplikasi web konvensional menjadi **Single Page Application (SPA)** menggunakan **VueJS 3**. Fokus utama adalah penerapan *Vue Components* untuk memecah UI menjadi bagian modular dan *Vue Router* untuk menangani perpindahan halaman di sisi klien tanpa melakukan *hard-reload* pada browser.
-
-## 2. Tujuan Praktikum
-
-* Memahami konsep **Vue Components** agar kode antarmuka lebih modular dan *reusable*.
-* Mengimplementasikan **Vue Router** untuk *Client-Side Routing*.
-* Membangun aplikasi web yang responsif dengan pengalaman pengguna layaknya aplikasi *mobile*.
-
-## 3. Konsep Utama
-
-* **Vue Components**: Bagian UI yang diisolasi (seperti Header, Footer, Halaman Artikel) yang dapat digunakan berulang kali.
-* **Vue Router**: *Library* yang mengatur navigasi antar komponen berdasarkan URL, sehingga browser tidak perlu meminta ulang seluruh halaman ke server.
-* **SPA (Single Page Application)**: Arsitektur aplikasi di mana transisi antar halaman terjadi secara instan tanpa *refresh* browser, yang meningkatkan kecepatan dan kenyamanan penggunaan aplikasi.
-
-## 4. Langkah-langkah Praktikum
-
-1. **Pemisahan Komponen**: Memecah file `index.html` menjadi komponen terpisah (misalnya `Home.js`, `Artikel.js`, `About.js`).
-2. **Konfigurasi Router**: Mendefinisikan rute dalam objek `const routes = [...]` dan melakukan inisialisasi `VueRouter` untuk menghubungkan URL dengan komponen yang bersangkutan.
-3. **Penyisipan `<router-view>**`: Mengganti konten dinamis pada `index.html` dengan tag `<router-view />` sebagai tempat di mana komponen akan dimuat secara bergantian.
-4. **Implementasi Navigasi**: Menggunakan `<router-link>` sebagai pengganti tag `<a>` agar perpindahan halaman ditangani oleh *router* secara *asynchronous*.
-
-## 5. Dokumentasi Screenshot
-
-*(Harap lampirkan screenshot berikut untuk melengkapi laporan Anda):*
-
-* **Screenshot 1**: Struktur folder proyek yang menunjukkan pemisahan komponen (folder `components/`).
-* **Screenshot 2**: Tampilan halaman saat berpindah menu (Beranda, Kelola Artikel, About) yang menunjukkan aplikasi berjalan sebagai SPA.
-* **Screenshot 3**: Kode konfigurasi `routes` pada file `app.js` atau file konfigurasi router Anda.
-* **Screenshot 4**: Tampilan halaman `About` (sesuai tugas tambahan di modul) yang menampilkan profil singkat Anda.
-
-## 6. Pertanyaan dan Tugas
-
-* **Apa keuntungan menggunakan Component?**: Komponen membuat kode lebih bersih, mudah di- *maintain*, dan satu komponen yang sudah dibuat dapat digunakan di berbagai bagian aplikasi tanpa harus menulis ulang kode.
-* **Kenapa tidak boleh menggunakan `<a>` tag biasa?**: Karena tag `<a>` secara *default* akan memicu perintah *refresh* halaman ke server. Untuk SPA, kita wajib menggunakan `router-link` agar transisi halaman tetap berada di sisi klien (*client-side*).
-
----
-
-Berdasarkan dokumen **"Modul Praktikum 13: VueJS Autentikasi dan Navigation Guards"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap untuk melengkapi laporan praktikum Anda di repository `Lab11Web_VueJS`.
-
----
-
-# Laporan Praktikum 13: Autentikasi dan Navigation Guards (SPA Security)
-
-## 1. Deskripsi Praktikum
-
-Praktikum ini berfokus pada aspek keamanan dalam aplikasi **Single Page Application (SPA)**. Kita menerapkan sistem autentikasi pengguna dan membatasi hak akses halaman (*Client-Side Security*) menggunakan fitur **Navigation Guards** dari Vue Router serta integrasi modul login ke *backend* CodeIgniter 4.
-
-## 2. Tujuan Praktikum
-
-* Memahami konsep pembatasan hak akses rute pada sisi klien.
-* Mengimplementasikan `router.beforeEach` sebagai *Navigation Guards* untuk melindungi rute privat.
-* Membuat API *endpoint* autentikasi di *backend* CI4.
-* Mengintegrasikan proses Login/Logout pada aplikasi SPA.
-
-## 3. Konsep Utama
-
-* **Navigation Guards (`router.beforeEach`)**: Fungsi "penjaga pintu" yang berjalan sebelum setiap navigasi rute dilakukan. Jika pengguna belum login (tidak memiliki *token*), sistem akan menolak akses dan mengarahkan kembali ke halaman login.
-* **Client-Side Security**: Karena SPA memuat seluruh aplikasi di browser, proteksi rute di sisi klien sangat penting untuk mencegah akses tidak sah ke komponen yang bersifat sensitif/admin.
-* **Axios HTTP Post**: Digunakan untuk mengirimkan kredensial login (email/password) ke server untuk diverifikasi, yang jika sukses, akan menyimpan *token* atau status *session* pengguna.
-
-## 4. Langkah-langkah Praktikum
-
-1. **Backend Auth**: Menambahkan API *endpoint* untuk proses verifikasi login di *backend* CodeIgniter 4.
-2. **Setup State**: Menambahkan logika pengecekan status login di *frontend* (misalnya menyimpan status di `localStorage` atau *Vuex*).
-3. **Navigation Guards**: Menambahkan kode `router.beforeEach((to, from, next) => { ... })` di file router utama. Jika rute memiliki meta `requiresAuth: true` dan pengguna belum login, arahkan ke `/login`.
-4. **Implementasi Logout**: Membuat fungsi untuk menghapus data *session* di *frontend* dan mengarahkan kembali ke halaman login.
-
-## 5. Dokumentasi Screenshot
-
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
-
-* **Screenshot 1**: Halaman Login (saat pengguna diminta memasukkan kredensial).
-* **Screenshot 2**: Bukti akses ditolak (saat mencoba mengakses `/admin/artikel` tanpa login/sebelum login).
-* **Screenshot 3**: *Network Tab* pada browser saat terjadi *request* login via `Axios POST`.
-* **Screenshot 4**: Tampilan menu atas yang berubah menjadi link "Logout" setelah berhasil login.
-
-## 6. Pertanyaan dan Tugas
-
-* **Mengapa harus `router.beforeEach`?**: Agar aplikasi dapat melakukan pengecekan status autentikasi secara otomatis setiap kali pengguna mencoba berpindah halaman, sehingga halaman privat tidak pernah sempat dirender jika pengguna tidak berhak.
-* **Keamanan SPA**: *Client-side security* hanyalah lapisan pertama. Anda tetap wajib memvalidasi token atau sesi di setiap API *request* pada *backend* (API Side) untuk memastikan keamanan data yang sesungguhnya.
-
----
-
-Berdasarkan dokumen **"Modul Praktikum 14: Keamanan API, Autentikasi Token, dan Axios Interceptors"** yang Anda unggah, berikut adalah draf `README.md` untuk melengkapi laporan praktikum terakhir Anda di repository `Lab11Web_VueJS`.
-
----
-
-# Laporan Praktikum 14: Keamanan API & Token-Based Authentication
-
-## 1. Deskripsi Praktikum
-
-Praktikum ini merupakan tahap final dalam pengamanan aplikasi web. Kita beralih dari sekadar *Client-Side Security* (Vue Router) menuju **Server-Side Security** menggunakan **Token-Based Authentication**. Kita mengimplementasikan *Filter* pada *backend* (CodeIgniter 4) untuk melindungi *endpoint* API dan menggunakan **Axios Interceptors** pada *frontend* (VueJS) untuk menyisipkan token secara otomatis di setiap permintaan HTTP.
-
-## 2. Tujuan Praktikum
-
-* Memahami konsep autentikasi berbasis token (*Bearer Token*).
-* Mengimplementasikan `Filters` di CodeIgniter 4 untuk mencegah akses API ilegal oleh pihak luar (seperti via Postman).
-* Menggunakan `Axios Interceptors` untuk manajemen transmisi token yang aman dan otomatis dari sisi klien.
-
-## 3. Konsep Utama
-
-* **Token-Based Authentication**: Setelah login, server memberikan *token* unik kepada klien. Klien wajib menyertakan *token* ini di *header* `Authorization` untuk setiap akses ke data sensitif.
-* **Server-Side Filter**: Mekanisme di CodeIgniter 4 yang memeriksa validitas *token* sebelum data API dikirimkan. Jika *token* tidak ada atau tidak valid, akses akan ditolak (401 Unauthorized).
-* **Axios Interceptors**: Fitur di *library* Axios yang memungkinkan kita mencegat setiap permintaan HTTP (`request`) untuk menambahkan *token* secara otomatis, sehingga kita tidak perlu menulis ulang kode penambahan *header* di setiap fungsi.
-
-## 4. Langkah-langkah Praktikum
-
-1. **Implementasi Filter API**: Membuat *Filter* di CodeIgniter 4 yang memverifikasi *token* pada `header` permintaan masuk.
-2. **Setup Interceptors**: Pada file konfigurasi Axios di proyek VueJS, tambahkan *interceptor*:
 ```javascript
-axios.interceptors.request.use(config => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+export default {
+    setup() {
+        // 'ref' membuat variabel artikel menjadi reaktif
+        const artikel = ref([]);
+
+        // Fungsi untuk mengambil data dari API
+        const fetchArtikel = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/post');
+                // Mengupdate data reaktif dengan hasil response
+                artikel.value = response.data;
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+            }
+        };
+
+        // Hook yang dijalankan saat komponen pertama kali muncul di browser
+        onMounted(fetchArtikel);
+
+        return { artikel };
     }
-    return config;
+}
+
+```
+
+**Penjelasan Detail:**
+
+* `ref([])`: Variabel `artikel` didefinisikan sebagai *reactive reference*. Dalam Vue 3, setiap perubahan pada `artikel.value` akan memicu *re-render* otomatis pada komponen yang menggunakannya.
+* `axios.get(...)`: Menggunakan pustaka *Axios* untuk mengirimkan HTTP Request secara asinkron ke endpoint API yang telah dibuat di praktikum sebelumnya.
+* `onMounted()`: Ini adalah kunci dari sinkronisasi data; fungsi `fetchArtikel` dipanggil tepat setelah komponen selesai dimuat, sehingga pengguna tidak perlu menekan tombol apa pun untuk melihat data pertama kali.
+
+#### 2. Pembahasan Kodingan: Rendering Data Dinamis
+
+Setelah data tersimpan dalam *state*, kita menampilkannya ke dalam *template* HTML secara reaktif.
+
+```html
+<template>
+  <div class="artikel-container">
+    <h2>Daftar Artikel</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Judul</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in artikel" :key="item.id">
+          <td>{{ item.judul }}</td>
+          <td>
+            <button @click="hapusArtikel(item.id)">Hapus</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+```
+
+**Penjelasan Detail:**
+
+* `v-for="item in artikel"`: Ini adalah direktif *looping* Vue. Jika array `artikel` bertambah atau berkurang, tabel akan memperbarui dirinya sendiri secara otomatis tanpa instruksi `append` atau `remove` dari JavaScript.
+* `{{ item.judul }}`: Sintaks *interpolation* untuk menampilkan data langsung dari *state* ke tampilan.
+* `@click`: *Event listener* bawaan Vue untuk memicu fungsi `hapusArtikel` ketika tombol ditekan.
+
+#### 3. Pembahasan Kodingan: Operasi Hapus Data
+
+Berikut adalah logika untuk menghapus data secara asinkron dari sisi *client* dan memperbarui tampilan secara *real-time*.
+
+```javascript
+const hapusArtikel = async (id) => {
+    if (confirm('Yakin ingin menghapus?')) {
+        await axios.delete(`http://localhost:8080/post/${id}`);
+        // Setelah berhasil di server, filter data di client untuk memperbarui UI
+        artikel.value = artikel.value.filter(item => item.id !== id);
+    }
+};
+
+```
+
+**Penjelasan Detail:**
+
+* `axios.delete(...)`: Mengirimkan perintah penghapusan ke *backend* API.
+* `filter(...)`: Ini adalah teknik manipulasi *state* yang efisien. Alih-alih melakukan *reload* halaman, kita cukup menghapus elemen yang bersangkutan dari *array* `artikel` di memori klien, maka Vue akan secara otomatis menghilangkan baris tersebut dari tabel di tampilan layar.
+
+#### 4. Analisis Konsep Utama
+
+* **Responsivitas**: Aplikasi terasa sangat cepat karena tidak ada *full-page reload*. Seluruh operasi CRUD dilakukan di latar belakang menggunakan AJAX.
+* **Component Architecture**: Dengan pola ini, jika nanti Anda butuh fitur pencarian, Anda cukup membuat komponen baru tanpa mengganggu komponen daftar artikel yang sudah ada.
+* **Debugging**: Penting untuk selalu memantau *Tab Network* di *Developer Tools* browser untuk melihat apakah *request* API berhasil (status 200) atau gagal (status 404/500).
+
+Apakah pembahasan detail ini sudah memenuhi kebutuhan laporan Anda, atau ada bagian *state management* atau *routing* (Vue Router) yang perlu dibedah lebih dalam?
+
+# Laporan Praktikum 12: Implementasi Vue Components dan Client-Side Routing (SPA)
+
+Transformasi aplikasi web menuju arsitektur *Single Page Application* (SPA) merupakan langkah esensial dalam pengembangan antarmuka modern yang berfokus pada kecepatan dan kenyamanan pengguna. Dengan menggunakan Vue Components, kita dapat mentransformasi struktur kode yang tadinya monolitik menjadi kumpulan bagian-bagian UI yang bersifat modular dan terisolasi. Pendekatan ini secara drastis meningkatkan efisiensi pengembangan, karena setiap komponen seperti *header*, *footer*, atau daftar artikel dapat dikelola secara mandiri, diuji secara terpisah, dan digunakan kembali (*reusable*) di berbagai bagian aplikasi tanpa duplikasi kode yang tidak perlu.
+
+Selain modularitas, integrasi Vue Router menjadi tulang punggung dari arsitektur SPA. Jika pada aplikasi web tradisional setiap perpindahan menu mengharuskan *browser* untuk memuat ulang seluruh halaman dari *server*, *Client-Side Routing* memungkinkan transisi antar halaman terjadi secara instan melalui manipulasi DOM yang cerdas. Dengan memetakan URL tertentu ke komponen spesifik, aplikasi mampu memberikan pengalaman navigasi yang mulus layaknya aplikasi *mobile*. Penguasaan teknik ini tidak hanya meningkatkan responsivitas aplikasi, tetapi juga mencerminkan standar profesional dalam membangun sistem antarmuka web yang skalabel dan efisien.
+
+* **Vue Components**: Unit UI modular (seperti `Home.js`, `Artikel.js`, `About.js`) yang memungkinkan isolasi logika dan tampilan sehingga aplikasi lebih mudah dikelola.
+* **Client-Side Routing**: Mekanisme navigasi yang dikelola sepenuhnya oleh *client* (browser) menggunakan `Vue Router`, sehingga meniadakan kebutuhan untuk melakukan *hard-reload* saat berpindah halaman.
+* **Single Page Application (SPA)**: Pola arsitektur di mana aplikasi hanya memuat satu file HTML utama dan melakukan pembaruan konten secara dinamis melalui injeksi komponen.
+* **`router-view` dan `router-link**`: Elemen inti Vue Router; `router-view` bertindak sebagai *placeholder* konten dinamis, sementara `router-link` berfungsi sebagai navigator yang mencegah aksi *refresh* default browser.
+
+#### 1. Pembahasan Kodingan: Konfigurasi Vue Router
+
+Langkah paling kritikal dalam membangun SPA adalah mendefinisikan rute. Kita menggunakan *Array of Routes* untuk memetakan jalur URL ke komponen yang sesuai.
+
+```javascript
+// Konfigurasi Router (app.js)
+const routes = [
+    { path: '/', component: Home },
+    { path: '/artikel', component: Artikel },
+    { path: '/about', component: About }
+];
+
+const router = VueRouter.createRouter({
+    history: VueRouter.createWebHistory(),
+    routes, // Inisialisasi rute yang telah didefinisikan
+});
+
+const app = Vue.createApp({});
+app.use(router); // Mengintegrasikan router ke dalam instance aplikasi Vue
+app.mount('#app');
+
+```
+
+**Penjelasan Detail:**
+
+* `createWebHistory()`: Memungkinkan aplikasi menggunakan format URL modern (tanpa tanda pagar `#`) yang lebih SEO-friendly.
+* `app.use(router)`: Fungsi ini mendaftarkan *plugin* router ke dalam aplikasi utama, sehingga komponen di seluruh aplikasi dapat mengakses fitur navigasi melalui `this.$router` atau *hook* navigasi.
+* `routes`: Objek ini adalah otak navigasi. Setiap kali URL berubah, `Vue Router` secara otomatis mencari *path* yang cocok dan merender komponen yang tertaut ke dalam elemen `<router-view />`.
+
+#### 2. Pembahasan Kodingan: Struktur Komponen Modular
+
+Kita memisahkan kode menjadi file komponen agar tidak terjadi penumpukan kode pada satu file saja.
+
+```javascript
+// Contoh Komponen Artikel (components/Artikel.js)
+const Artikel = {
+    template: `
+        <div class="artikel-container">
+            <h2>Daftar Artikel</h2>
+            <div v-for="item in artikelList" :key="item.id" class="card">
+                <h3>{{ item.judul }}</h3>
+                <p>{{ item.isi }}</p>
+            </div>
+        </div>
+    `,
+    data() {
+        return {
+            artikelList: [] // State lokal untuk menyimpan data
+        };
+    },
+    mounted() {
+        // Melakukan fetch API saat komponen dipasang
+        fetch('http://localhost:8080/post')
+            .then(res => res.json())
+            .then(data => { this.artikelList = data; });
+    }
+};
+
+```
+
+**Penjelasan Detail:**
+
+* `template`: Mendefinisikan struktur HTML dari komponen. Penggunaan *template literal* memungkinkan penulisan HTML yang bersih.
+* `data()`: Setiap komponen memiliki *state* sendiri. Ini menjamin bahwa data artikel hanya akan ada di komponen `Artikel` dan tidak akan membocorkan data ke komponen lain (seperti `About`), menjaga enkapsulasi.
+* `mounted()`: Ini adalah *lifecycle hook* yang memastikan data artikel baru diambil ketika komponen benar-benar telah dirender ke layar, mencegah *error* saat DOM belum siap.
+
+#### 3. Pembahasan Kodingan: Implementasi Navigasi
+
+Mengganti tag `<a>` konvensional dengan `router-link` adalah syarat wajib untuk membuat aplikasi tetap berada dalam mode SPA.
+
+```html
+<nav>
+    <router-link to="/">Beranda</router-link>
+    <router-link to="/artikel">Kelola Artikel</router-link>
+    <router-link to="/about">Tentang Kami</router-link>
+</nav>
+
+<router-view></router-view>
+
+```
+
+**Penjelasan Detail:**
+
+* `<router-link to="...">`: Pustaka Vue Router akan mencegat klik pada elemen ini dan melakukan perubahan URL secara *asynchronous* tanpa mengirim permintaan ke server.
+* `<router-view />`: Ini adalah "wadah ajaib" yang akan terisi secara otomatis oleh konten komponen (Home/Artikel/About) berdasarkan rute yang sedang aktif. Ini mencegah halaman melakukan *re-render* total karena hanya konten di dalam tag ini yang akan diganti.
+
+#### 4. Analisis Konsep Utama
+
+* **SPA Performance**: Karena hanya konten di dalam `<router-view />` yang diperbarui, *header* dan *navigasi* tidak ikut dimuat ulang, memberikan pengalaman transisi halaman yang instan.
+* **Component Reusability**: Jika suatu saat kita ingin menampilkan daftar artikel di halaman Beranda juga, kita tinggal memanggil komponen `<Artikel />` kembali tanpa harus menulis ulang logika *fetch* data.
+* **State Management**: Dengan memisahkan komponen, kita menjaga *state* aplikasi tetap terorganisir. *Bug* pada halaman `About` tidak akan mempengaruhi logika data pada halaman `Artikel`.
+
+Demikian pembahasan detail mengenai implementasi Vue Components dan Routing. Apakah Anda membutuhkan pembahasan lebih lanjut mengenai *Navigation Guards* (untuk proteksi rute) atau bagaimana menangani *State Management* (Pinia/Vuex) pada aplikasi SPA Anda?
+
+
+# Laporan Praktikum 13: Implementasi Keamanan Autentikasi dan Navigation Guards pada SPA
+
+Dalam pengembangan aplikasi *Single Page Application* (SPA), tantangan keamanan berpindah dari ranah server-side ke ranah client-side. Karena seluruh struktur aplikasi dimuat ke dalam *browser* sejak awal, proteksi halaman tidak bisa hanya mengandalkan *routing* standar. Di sinilah peran *Navigation Guards* (khususnya `router.beforeEach`) menjadi sangat krusial; fitur ini bertindak sebagai mekanisme penyaring atau "penjaga pintu" yang secara otomatis melakukan verifikasi status otentikasi pengguna sebelum rute baru dirender oleh *browser*. Dengan metode ini, halaman-halaman sensitif yang memerlukan hak akses administratif dapat terlindungi dengan efektif dari akses yang tidak sah, menciptakan lapisan keamanan pertama yang tangguh bagi pengalaman pengguna.
+
+Selain mekanisme di sisi klien, integritas aplikasi harus diperkuat dengan integrasi *backend* yang andal. Proses login bukan sekadar perpindahan tampilan, melainkan sebuah siklus hidup di mana *frontend* mengirimkan kredensial melalui *Axios HTTP Post* ke *API Endpoint* di CodeIgniter 4, yang kemudian akan melakukan validasi data terhadap *database*. Keberhasilan proses ini akan menghasilkan *token* atau *session* yang disimpan di *localStorage*, yang nantinya akan dibaca oleh `router.beforeEach` untuk menentukan apakah pengguna layak mengakses suatu rute. Pendekatan ini memastikan bahwa setiap interaksi pengguna di dalam aplikasi terikat pada status otentikasi yang valid, menciptakan ekosistem aplikasi yang aman, terintegrasi, dan profesional.
+
+* **Navigation Guards (`router.beforeEach`)**: Mekanisme global yang menginterupsi proses navigasi rute untuk melakukan pengecekan otorisasi sebelum komponen halaman di-render.
+* **Client-Side Security**: Lapisan keamanan yang diterapkan pada sisi *browser* untuk mencegah pengguna yang tidak terautentikasi mengakses komponen aplikasi yang bersifat privat.
+* **Axios HTTP Post**: Fungsi vital untuk mengirimkan data sensitif (kredensial pengguna) dari *frontend* ke *backend* untuk diproses secara aman.
+* **State Persistence**: Penggunaan `localStorage` atau *state management* untuk menyimpan status *login* agar pengguna tetap terautentikasi meskipun halaman di-*refresh*.
+
+#### 1. Pembahasan Kodingan: Implementasi Navigation Guards
+
+Ini adalah otak dari keamanan SPA kita. Kode ini diletakkan di file konfigurasi router untuk memproteksi halaman dari akses tanpa izin.
+
+```javascript
+// Konfigurasi Router (router/index.js)
+router.beforeEach((to, from, next) => {
+    // 1. Cek apakah rute tujuan memerlukan autentikasi
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    
+    // 2. Ambil status login dari localStorage
+    const isAuthenticated = localStorage.getItem('isLoggedIn');
+
+    if (requiresAuth && !isAuthenticated) {
+        // Jika rute butuh login tapi belum login, lempar ke halaman login
+        next('/login');
+    } else if (to.path === '/login' && isAuthenticated) {
+        // Jika sudah login tapi mencoba akses halaman login, lempar ke dashboard
+        next('/admin/artikel');
+    } else {
+        // Izinkan navigasi dilanjutkan
+        next();
+    }
 });
 
 ```
 
+**Penjelasan Detail:**
 
-3. **Pengujian Keamanan**: Mencoba mengakses endpoint API melalui Postman tanpa *token* untuk memastikan server menolak permintaan (Error 401).
-4. **End-to-End Testing**: Melakukan login di aplikasi web, lalu memantau tab *Network* di browser untuk memastikan setiap *request* API sudah menyertakan `Bearer <token>`.
+* `to.matched.some(...)`: Kode ini memeriksa setiap tingkatan rute yang dituju untuk mencari *metadata* `requiresAuth`. Jika ditemukan, maka rute tersebut diklasifikasikan sebagai halaman privat.
+* `next()`: Ini adalah fungsi *callback* wajib dalam Vue Router. `next()` yang dipanggil tanpa argumen akan mengizinkan navigasi, sementara `next('/login')` akan membatalkan navigasi saat ini dan mengalihkan pengguna ke rute lain.
+* **Keamanan**: Dengan pengecekan ini, pengguna tidak akan pernah sempat melihat konten halaman privat karena proses pengecekan dilakukan *sebelum* komponen halaman tersebut di-*mount* ke dalam DOM.
 
-## 5. Dokumentasi Screenshot
+#### 2. Pembahasan Kodingan: Fungsi Login dengan Axios
 
-*(Harap lampirkan screenshot berikut untuk laporan Anda):*
+Bagian ini menangani pengiriman data dari *form* ke *backend* CodeIgniter 4.
 
-* **Screenshot 1**: Bukti penolakan akses (Error 401) di Postman saat mencoba mengakses API tanpa token.
-* **Screenshot 2**: Tab *Network* (F12 -> Network) yang menunjukkan *request* API sukses dengan *header* `Authorization: Bearer <token>`.
-* **Screenshot 3**: Kode `Axios Interceptors` yang Anda terapkan di VueJS.
-* **Screenshot 4**: Konfigurasi `Filter` di CodeIgniter 4 (file `app/Config/Filters.php`).
+```javascript
+const handleLogin = async () => {
+    try {
+        const response = await axios.post('http://localhost:8080/user/login', {
+            email: email.value,
+            password: password.value
+        });
 
-## 6. Kesimpulan & Analisis
+        if (response.data.status === 'success') {
+            // Simpan status ke localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+            // Arahkan ke dashboard admin
+            router.push('/admin/artikel');
+        } else {
+            alert('Login Gagal: ' + response.data.message);
+        }
+    } catch (error) {
+        alert('Terjadi kesalahan pada server.');
+    }
+};
 
-* **Perbedaan Perlindungan**:
-* **Vue Router Navigation Guards (Client-Side)**: Berfungsi untuk memberikan pengalaman pengguna yang baik dengan membatasi navigasi menu di browser agar tidak membingungkan pengguna yang belum login. Namun, ini **tidak aman** karena data API tetap terbuka bagi siapa saja yang tahu URL-nya.
-* **CodeIgniter Filters (Server-Side)**: Adalah perlindungan yang **sebenarnya**. Mekanisme ini memastikan bahwa meskipun seseorang mencoba "menembak" API secara langsung via URL/Postman tanpa membawa token, server akan tetap menolak akses tersebut.
+```
+
+**Penjelasan Detail:**
+
+* `await axios.post(...)`: Kita mengirimkan data `email` dan `password` dalam format JSON ke server. Penggunaan `async/await` di sini sangat penting untuk menangani respons *server* yang bersifat asinkron.
+* `localStorage.setItem(...)`: Setelah server memvalidasi kredensial (misalnya melalui *check* di *database*), kita menandai pengguna sebagai "sudah login" secara permanen di memori *browser*.
+* `router.push(...)`: Berfungsi untuk mengarahkan pengguna secara otomatis ke halaman admin setelah proses login dinyatakan sukses, memberikan *user experience* yang instan.
+
+#### 3. Pembahasan Kodingan: Proteksi Rute (Meta Fields)
+
+Agar `router.beforeEach` tahu halaman mana yang harus dilindungi, kita harus menambahkan *meta* pada definisi rute.
+
+```javascript
+const routes = [
+    { 
+        path: '/admin/artikel', 
+        component: AdminArtikel, 
+        meta: { requiresAuth: true } // Menandai rute ini privat
+    },
+    { 
+        path: '/login', 
+        component: Login 
+    }
+];
+
+```
+
+**Penjelasan Detail:**
+
+* `meta: { requiresAuth: true }`: Ini adalah cara memberikan informasi tambahan ke *router*. Objek `meta` ini tidak akan mengubah tampilan, tetapi akan dibaca oleh fungsi `router.beforeEach` untuk memutuskan apakah akses harus diberikan atau ditolak.
+
+#### 4. Analisis Konsep Utama
+
+* **Pentingnya Client-Side Security**: *Navigation Guards* adalah garis pertahanan pertama. Namun, Anda harus ingat bahwa ini adalah *client-side*. Anda wajib memvalidasi setiap token/sesi di *API Backend* setiap kali melakukan aksi CRUD untuk menjamin keamanan data yang sebenarnya.
+* **UX yang Mulus**: Dengan mengarahkan pengguna ke halaman login saat akses ditolak, aplikasi terasa seperti sistem yang terintegrasi penuh, bukan kumpulan halaman web yang terpisah.
+* **Debugging**: Gunakan `console.log(to)` di dalam `router.beforeEach` untuk melihat detail rute mana yang sedang diakses, terutama jika terjadi kendala rute yang tidak terproteksi dengan benar.
 
 
 
----
+# Laporan Praktikum 14: Keamanan API dan Implementasi Token-Based Authentication
+
+Implementasi *Token-Based Authentication* merupakan standar emas dalam menjaga keamanan pertukaran data antara *frontend* (SPA) dan *backend* (REST API). Pada praktikum ini, kita melangkah lebih jauh dari sekadar pembatasan navigasi di sisi klien, menuju pengamanan *server-side* yang sesungguhnya. Ketika aplikasi kita tumbuh menjadi sistem yang lebih terbuka dan dapat diakses oleh berbagai *client*, proteksi berbasis *router* saja menjadi tidak memadai karena *endpoint* API dapat diakses oleh siapapun melalui *tools* pihak ketiga. Oleh karena itu, penerapan mekanisme validasi berbasis *token* (seperti JWT atau *Bearer Token*) di sisi server menjadi wajib, memastikan bahwa setiap permintaan data yang masuk ke basis data telah melalui proses autentikasi yang valid dan terenkripsi.
+
+Integrasi antara *Axios Interceptors* di sisi *frontend* dan *Filters* di sisi *backend* menciptakan aliran data yang aman dan otomatis. Dengan *Interceptors*, aplikasi kita secara cerdas akan menyisipkan *token* autentikasi ke dalam setiap *header* permintaan HTTP tanpa harus menulis ulang logika tersebut di setiap fungsi pemanggilan API. Di sisi lain, *Filter* pada *backend* bertindak sebagai penjaga gerbang yang memeriksa keabsahan *token* tersebut sebelum memproses *query* ke basis data. Sinergi antara kedua mekanisme ini tidak hanya meningkatkan profil keamanan aplikasi secara drastis, tetapi juga menyederhanakan kode di sisi klien, membuat alur komunikasi antar sistem menjadi lebih stabil, rapi, dan tahan terhadap upaya akses ilegal dari pihak luar.
+
+* **Token-Based Authentication**: Mekanisme di mana server mengeluarkan *token* unik (sebagai bukti identitas) setelah pengguna login, yang wajib disertakan klien dalam setiap permintaan data.
+* **Server-Side Filter**: *Middleware* di CodeIgniter 4 yang bertugas memvalidasi keberadaan dan keaslian *token* pada `Authorization Header` setiap kali *request* API masuk.
+* **Axios Interceptors**: *Middleware* di sisi *client* yang mencegat permintaan HTTP sebelum keluar dari *browser* untuk menyisipkan *token* secara otomatis tanpa intervensi manual pengembang.
+* **Unauthorized Response (401)**: Status HTTP standar yang dikembalikan oleh *server* ketika *token* tidak disertakan atau sudah kedaluwarsa, yang menjadi indikator kegagalan autentikasi.
+
+#### 1. Pembahasan Kodingan: Axios Interceptors (Sisi Frontend)
+
+*Axios Interceptor* adalah alat yang sangat kuat untuk menangani *token* secara global. Alih-alih menambahkan `Authorization header` di setiap fungsi API, kita cukup menulisnya sekali.
+
+```javascript
+// src/api/axios.js
+import axios from 'axios';
+
+// Menambahkan request interceptor
+axios.interceptors.request.use(
+    (config) => {
+        // Mengambil token yang disimpan di localStorage setelah proses login
+        const token = localStorage.getItem('token');
+        
+        // Jika token ada, tambahkan ke header Authorization
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        
+        // Mengembalikan konfigurasi yang sudah dimodifikasi
+        return config;
+    },
+    (error) => {
+        // Menangani jika terjadi kesalahan pada request
+        return Promise.reject(error);
+    }
+);
+
+```
+
+**Penjelasan Detail:**
+
+* `axios.interceptors.request.use(...)`: Kode ini membungkus setiap *request* yang akan dikirim oleh *Axios*. Sebelum *request* benar-benar meninggalkan browser, fungsi ini berjalan terlebih dahulu.
+* `config.headers.Authorization = 'Bearer ' + token`: Inilah inti dari keamanan kita. Kita menyuntikkan *token* ke dalam *header* HTTP. *Backend* nanti akan membaca *header* ini untuk memastikan siapa yang sedang mengakses API tersebut.
+* **Otomasi**: Dengan *interceptor*, kode Anda tetap bersih karena tidak perlu lagi menulis `headers: { ... }` di setiap fungsi `axios.get` atau `axios.post`.
+
+#### 2. Pembahasan Kodingan: Server-Side Filter (Sisi Backend)
+
+*Filter* di CodeIgniter 4 bekerja seperti *security guard*. Ia memeriksa *token* sebelum *Controller* manapun diproses.
+
+```php
+// app/Filters/AuthFilter.php
+namespace App\Filters;
+
+use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use Config\Services;
+
+class AuthFilter implements FilterInterface {
+    public function before(RequestInterface $request, $arguments = null) {
+        $header = $request->getHeaderLine('Authorization');
+        
+        // Memeriksa apakah token Bearer tersedia
+        if (!preg_match('/Bearer\s(\S+)/', $header, $matches)) {
+            return Services::response()->setJSON([
+                'status' => 401,
+                'message' => 'Token tidak ditemukan atau tidak valid'
+            ])->setStatusCode(401);
+        }
+        
+        // Logika verifikasi token (misalnya memverifikasi JWT) 
+        // akan diletakkan di sini sebelum next() dipanggil.
+    }
+
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {}
+}
+
+```
+
+**Penjelasan Detail:**
+
+* `getHeaderLine('Authorization')`: *Filter* mengambil data dari *header* yang dikirim oleh *Interceptor* di sisi klien tadi.
+* `preg_match('/Bearer\s(\S+)/', ...)`: Ini adalah *Regex* (Regular Expression) untuk memastikan *format* *token* diawali dengan kata "Bearer" diikuti oleh *string token*-nya.
+* `setStatusCode(401)`: Jika *token* tidak ditemukan, *server* langsung memutus koneksi dan mengirimkan respons `401 Unauthorized`. Hal ini memastikan kode di dalam *Controller* Anda tidak akan pernah dijalankan jika pengguna tidak sah.
+
+#### 3. Analisis Konsep Utama
+
+* **End-to-End Security**: Keamanan sekarang terbagi dua: (1) **Vue Router** melindungi UI agar pengguna tidak "bingung" melihat halaman admin tanpa login, dan (2) **API Filter** melindungi database agar tidak bisa diakses tanpa *token* yang sah.
+* **Perbandingan Perlindungan**: Jika Anda menghapus *Navigation Guards*, aplikasi mungkin tetap aman karena *API Filter* akan menolak *request* data. Sebaliknya, jika Anda menghapus *API Filter*, siapapun bisa mengakses data Anda melalui Postman meskipun halaman admin Anda sudah diproteksi oleh *Navigation Guards*. Keduanya harus ada.
+* **Transparansi**: Dengan *Axios Interceptor*, proses autentikasi menjadi transparan bagi *developer* di sisi *frontend* karena mereka bisa memanggil API seolah-olah tidak ada proteksi, padahal sistem sudah secara otomatis menangani pengiriman *token* di balik layar.
+
 
