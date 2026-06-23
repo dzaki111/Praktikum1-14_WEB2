@@ -5,223 +5,197 @@
 
 # Laporan Praktikum 1: PHP Framework (CodeIgniter 4)
 
-## 1. Deskripsi Praktikum
+Pengaturan direktori yang sistematis dan pemahaman arsitektur yang mendalam merupakan fondasi utama bagi setiap pengembang dalam membangun aplikasi berbasis *framework* CodeIgniter 4. Dengan memahami bagaimana setiap komponen saling berinteraksi, pengembang dapat memastikan bahwa kode yang dihasilkan tidak hanya sekadar berfungsi, tetapi juga memiliki tingkat keamanan yang tinggi serta performa yang optimal dalam menangani permintaan pengguna.
 
-Praktikum ini bertujuan untuk memahami konsep dasar *Framework* PHP, yaitu **CodeIgniter 4**. Fokus utama pada modul ini adalah mempelajari arsitektur **MVC (Model-View-Controller)** dan bagaimana melakukan konfigurasi dasar pada *web server* (XAMPP) untuk mendukung pengembangan aplikasi web berbasis *framework*.
+Selain itu, dokumentasi yang terstruktur dan konfigurasi lingkungan pengembangan (*development environment*) yang tepat akan sangat membantu dalam proses pemeliharaan jangka panjang. Melalui penerapan arsitektur *Model-View-Controller* (MVC) yang konsisten, setiap bagian dari aplikasi memiliki tanggung jawab yang terisolasi, sehingga meminimalisir potensi kesalahan kodingan sekaligus mempermudah proses pengembangan fitur-fitur baru di masa yang akan datang.
 
-## 2. Tujuan Praktikum
+#### 1. Struktur Folder dan Pengorganisasian Kode
 
-* Memahami konsep dasar *Framework* dan arsitektur **MVC**.
-* Mampu melakukan konfigurasi lingkungan pengembangan (*environment*) untuk CodeIgniter 4.
-* Mampu membuat program sederhana menggunakan *framework* CodeIgniter 4.
+Pengaturan direktori yang sistematis adalah standar utama dalam CI4. Struktur ini membantu pengembang memisahkan *logic* dari *presentation*.
 
-## 3. Persiapan Lingkungan (Environment)
+* **Folder `app/**`: Pusat logika aplikasi (*Controller, Model, View*).
+* **Folder `public/**`: Wadah aset statis seperti CSS dan gambar.
+* **Konfigurasi Awal**: Anda harus memastikan *Document Root* pada server web (Apache) diarahkan ke folder `public/` agar file sistem di luar folder tersebut aman dari akses langsung pengguna. Struktur ini memaksa seluruh *request* masuk melalui `index.php` yang berada di `public/`, menjaga keamanan aplikasi dari *direct access*.
 
-Untuk menjalankan aplikasi ini, konfigurasi berikut telah diaktifkan pada `php.ini` (XAMPP):
+#### 2. Implementasi Routing sebagai Peta Navigasi
 
-* `php-json`: Untuk pemrosesan data JSON.
-* `php-mysqlnd`: Native driver untuk koneksi database MySQL.
-* `php-xml`: Untuk pemrosesan XML.
-* `php-intl`: Untuk dukungan multibahasa.
+*Routing* adalah "polisi lalu lintas" yang mengarahkan setiap *request* URL ke *method* yang tepat.
 
-## 4. Langkah-langkah Praktikum
-
-1. **Instalasi**: Menyiapkan folder proyek di direktori `htdocs` (sebagai *docroot*).
-2. **Konfigurasi Server**: Mengaktifkan ekstensi PHP yang diperlukan melalui XAMPP Control Panel.
-3. **Struktur MVC**: Memahami bagaimana *Controller* mengelola *request*, *Model* berinteraksi dengan database, dan *View* menampilkan antarmuka pengguna.
-4. **Implementasi Routing**: Mengatur *route* agar halaman dapat diakses melalui browser (contoh: `/about`).
-
-## 5. Dokumentasi Screenshot
-
-*(Berikut adalah daftar screenshot yang wajib Anda lampirkan di laporan agar sesuai dengan instruksi modul)*
-
-* **Screenshot 1**: Tampilan XAMPP Control Panel saat Apache dan MySQL berjalan.
-* **Screenshot 2**: Struktur folder proyek di dalam VS Code.
-* **Screenshot 3**: Hasil tampilan halaman awal (Halaman Beranda/Home).
-* **Screenshot 4**: Hasil tampilan halaman `/about` yang sudah menggunakan layout *header* dan *footer*.
-
-## 6. Penjelasan Konsep MVC (Tugas Modul)
-
-* **Model**: Bertanggung jawab menangani data dan logika database.
-* **View**: Berfungsi menampilkan antarmuka (UI) kepada pengguna (seperti file `.php` di folder `app/views`).
-* **Controller**: Bertindak sebagai penghubung (*bridge*) yang menerima input dari pengguna, memprosesnya melalui model, dan memberikan respons berupa view.
-
-  Tentu, mari kita kaitkan konsep **Framework CodeIgniter 4 (CI4)** yang terdapat dalam modul praktikum dengan project yang pernah kita bahas sebelumnya.
-
-CodeIgniter 4 menggunakan arsitektur **MVC (Model-View-Controller)**, yang sangat efisien untuk mengorganisir kode program, memisahkan logika bisnis, data, dan tampilan agar lebih mudah dikelola dalam skala project yang lebih besar.
-
-Berikut adalah penjelasan detail mengenai keterkaitan konsep ini dengan project Anda:
-
-### 1. Struktur Folder dan Pengorganisasian Kode
-
-Dalam pengembangan project, struktur direktori sangat krusial agar kode tidak berantakan. Berdasarkan modul, struktur folder dalam CI4 sudah diatur sedemikian rupa:
-
-* 
-**Folder `app/**`: Tempat Anda menaruh semua kode logika utama project, termasuk Controller, Model, dan View.
-
-
-* 
-**Folder `public/**`: Tempat penyimpanan aset statis seperti CSS, gambar, atau file JavaScript yang akan diakses oleh pengguna.
-
-
-* 
-**Implementasi**: Dalam project Anda, pastikan semua *logic* yang berhubungan dengan akses database ditaruh di dalam direktori `Models`, sedangkan untuk mengatur alur data antara view dan model dilakukan di dalam `Controllers`.
-
-
-
-### 2. Implementasi Routing
-
-Routing berfungsi untuk mengatur arah *request* dari URL menuju *controller* yang tepat. Jika project Anda memiliki banyak halaman, Anda tidak perlu membuat file fisik untuk setiap halaman tersebut, cukup definisikan *route*-nya.
-
-Contoh penambahan *route* baru di file `app/Config/Routes.php` untuk project Anda:
-
+* **Lokasi**: `app/Config/Routes.php`.
+* **Detail Kodingan**:
 ```php
-// Definisi route untuk project Anda
 $routes->get('/about', 'Page::about');
-$routes->get('/contact', 'Page::contact');
 
 ```
 
-Setiap kali pengguna mengakses `localhost:8080/about`, aplikasi akan otomatis mengarahkannya ke `Method about` di dalam `Class Page`.
 
-### 3. Penggunaan Controller dan View
+* **Penjelasan**: `$routes->get` menetapkan bahwa URL hanya merespons metode HTTP GET. `'Page::about'` adalah instruksi untuk mencari `Class Page` (Controller) dan menjalankan `Method about` di dalamnya. Ini adalah metode paling efisien untuk membangun URL yang bersih (*clean URL*). Tanpa *routing*, aplikasi akan bergantung pada struktur folder fisik, yang berisiko terhadap keamanan dan sulit dikelola.
 
-*Controller* adalah otak dari aplikasi yang menerima input, memproses data (jika perlu memanggil Model), dan kemudian memanggil *View* untuk ditampilkan.
+#### 3. Sinergi Controller dan View
 
-Berikut adalah contoh kodingan *Controller* (`app/Controllers/Page.php`) untuk project Anda:
+*Controller* adalah otak aplikasi yang menerima input, memprosesnya, dan mengirimkan data ke *View*.
 
+* **Penjelasan Kodingan**:
 ```php
-<?php 
 namespace App\Controllers;
-
-class Page extends BaseController 
-{
-    public function about() 
-    {
-        // Memanggil View dengan data dinamis
-        return view('about', [ 
-            'title' => 'Halaman About', 
-            'content' => 'Ini adalah detail konten project Anda.' 
-        ]);
+class Page extends BaseController {
+    public function about() {
+        $data = ['title' => 'Halaman About', 'content' => 'Detail konten project.'];
+        return view('about', $data);
     }
 }
 
 ```
 
-Penjelasan rincinya:
 
-* 
-**Namespace**: Menentukan lokasi *controller* agar dikenali oleh sistem CI4.
+* **Namespace**: `namespace App\Controllers` wajib ada agar *autoloader* CI4 dapat menemukan *class* Anda.
+* **Extends BaseController**: Dengan melakukan `extends`, *controller* Anda mendapatkan akses ke fitur *request*, *response*, dan *session* bawaan CI4.
+* **View Data**: `view('about', $data)` melakukan ekstraksi array `$data`, sehingga di dalam file `about.php`, Anda cukup memanggil `<?= $title; ?>`. CI4 secara otomatis melakukan *escaping* pada data yang dikirim, yang berarti aplikasi Anda terlindungi dari serangan XSS secara *default*.
 
+#### 4. Efisiensi Layout melalui Templating
 
-* 
-**Return view**: Fungsi ini bertugas memanggil file `view` yang diinginkan, sekaligus mengirimkan data (seperti `$title` dan `$content`) untuk ditampilkan ke *user*.
+Penggunaan `$this->include` adalah kunci penerapan prinsip **DRY (Don't Repeat Yourself)**.
 
-
-
-### 4. Membuat Layout yang Konsisten
-
-Agar tampilan project Anda seragam, Anda bisa menggunakan fitur *template* (seperti `header` dan `footer`) sehingga Anda tidak perlu menulis ulang kode HTML yang sama di setiap halaman.
-
-Kodingan untuk `app/Views/about.php` setelah menggunakan *template*:
-
+* **Penjelasan Kodingan**:
 ```php
 <?= $this->include('template/header'); ?>
-
 <h1><?= $title; ?></h1>
-<hr>
-<p><?= $content; ?></p>
-
 <?= $this->include('template/footer'); ?>
 
 ```
 
-* 
-**`$this->include()`**: Fungsi ini sangat memudahkan, di mana Anda hanya perlu membuat satu file `header.php` dan `footer.php` yang berisi elemen repetitif, lalu memanggilnya di setiap halaman. Ini memastikan perubahan pada navigasi atau *footer* cukup dilakukan di satu file saja.
 
 
+* **Penjelasan**: Saat CI4 memproses file ini, ia akan mengambil file `header.php`, menyambungkannya dengan konten utama, lalu menutupnya dengan `footer.php`. Hal ini memastikan bahwa jika Anda ingin mengubah menu navigasi, Anda hanya perlu mengedit satu file (`header.php`) dan perubahan akan otomatis merata ke seluruh halaman.
 
----
+#### 5. Dokumentasi dan Bukti Praktikum
 
-Catatan: Pastikan saat menjalankan project, Anda telah mengaktifkan ekstensi PHP yang diperlukan (seperti `php-mysqlnd` untuk database) melalui `php.ini` di XAMPP agar project dapat berjalan lancar.
+Dokumentasi ini membuktikan bahwa konfigurasi *environment* telah berhasil dilakukan.
 
----
-Tentu, berdasarkan file **"Web 2 - Modul Praktikum 2.pdf"** yang Anda unggah, berikut adalah draf `README.md` yang lengkap dan profesional untuk tugas praktikum **CRUD (Create, Read, Update, Delete) dengan CodeIgniter 4**.
+* **Pengaturan PHP (`php.ini`)**: Anda wajib mengaktifkan ekstensi di XAMPP agar CI4 dapat berjalan:
+* `extension=intl`: Digunakan untuk dukungan multibahasa dan format tanggal.
+* `extension=mysqli`: Wajib untuk koneksi database MySQL.
+* `extension=curl`: Diperlukan untuk komunikasi HTTP antar server.
 
-Anda bisa langsung menyalin kode ini ke file `README.md` di repository `Lab7Web` Anda:
 
----
+* **Screenshot**: Anda perlu melampirkan bukti XAMPP (Apache/MySQL *Running*), Struktur folder VS Code, serta hasil *render* halaman di *browser* sebagai bukti fungsionalitas.
+
+#### 6. Analisis Konsep MVC sebagai Fondasi Pengembangan
+
+MVC memisahkan tanggung jawab agar aplikasi mudah dikembangkan (*scalable*).
+
+* **Model**: Menangani *query* database dan validasi data. Menggunakan Model berarti Anda memisahkan bahasa SQL dari logika tampilan.
+* **View**: Berisi kode HTML dan PHP minimalis untuk tampilan. Ia tidak boleh melakukan proses *query* database secara langsung.
+* **Controller**: Bertindak sebagai *bridge*. Ia mengambil data dari Model dan mengirimkannya ke View. Inilah yang menjaga kode Anda tetap rapi.
+
+**Tips Pengaturan Tambahan**:
+Untuk kenyamanan pengembangan, pastikan file `.env` di direktori utama Anda dikonfigurasi dengan benar:
+
+* Ubah `CI_ENVIRONMENT = development` saat Anda sedang dalam tahap *coding* agar pesan *error* muncul secara lengkap saat terjadi kesalahan kodingan. Jika sudah siap untuk di-upload ke *hosting* asli, ubah menjadi `production` demi keamanan.
 
 # Laporan Praktikum 2: Framework Lanjutan (CRUD) - CodeIgniter 4
 
-## 1. Deskripsi Praktikum
+Mohon maaf atas ketidaktelitian saya sebelumnya. Anda benar, aspek **Database** adalah inti dari **Praktikum 2** yang membedakannya dengan praktikum sebelumnya.
 
-Praktikum ini berfokus pada implementasi operasi **CRUD (Create, Read, Update, Delete)** menggunakan framework **CodeIgniter 4**. Aplikasi yang dibangun adalah sistem pengelolaan data artikel sederhana yang terhubung dengan database MySQL.
+Berikut adalah laporan yang telah saya perbarui dengan memasukkan penjelasan teknis mengenai pembuatan database, tabel, dan konfigurasi koneksi secara mendalam ke dalam struktur laporan Anda.
 
-## 2. Tujuan Praktikum
+---
 
-* Memahami konsep dasar **Model** dalam arsitektur MVC.
-* Mampu mengimplementasikan operasi CRUD pada aplikasi web.
-* Mampu mengelola database menggunakan MySQL di lingkungan XAMPP.
+### Laporan Praktikum 2: Framework Lanjutan (CRUD) - CodeIgniter 4
 
-## 3. Persiapan Database
+#### 1. Persiapan Database dan Konfigurasi Koneksi
 
-Database yang digunakan bernama `lab_ci4` dengan tabel `artikel`.
-Berikut adalah struktur tabel yang digunakan:
+Sebelum membangun aplikasi, langkah pertama yang krusial adalah menyiapkan fondasi data. Dalam praktikum ini, kita menggunakan MySQL sebagai *database server*. Database ini berfungsi sebagai penyimpanan utama untuk data artikel yang akan dikelola. Setelah database dibuat, kita perlu menghubungkannya dengan CodeIgniter 4 melalui file konfigurasi `.env` agar sistem dapat berkomunikasi dengan tabel database.
 
-* **id**: INT, Primary Key, Auto Increment
-* **judul**: VARCHAR(200)
-* **isi**: TEXT
-* **gambar**: VARCHAR(200)
-* **status**: TINYINT(1)
-* **slug**: VARCHAR(200)
+Pengaturan koneksi ini sangat penting untuk menjembatani aplikasi dengan penyimpanan data yang bersifat persisten. Tanpa konfigurasi yang tepat, *framework* tidak akan mampu melakukan operasi *Query* seperti *insert*, *update*, maupun *delete* pada tabel yang telah disediakan. Oleh karena itu, memastikan parameter `hostname`, `database`, `username`, dan `password` sudah sesuai dengan kondisi lokal di XAMPP adalah langkah mutlak sebelum menjalankan logika pemrograman CRUD.
 
-## 4. Langkah-langkah Praktikum
+* **Pembuatan Database**: `CREATE DATABASE lab_ci4;`
+* **Pembuatan Tabel**: Dibuat tabel `artikel` dengan kolom `id`, `judul`, `isi`, `gambar`, `status`, dan `slug`.
+* **Konfigurasi Koneksi (`.env`)**:
+```env
+database.default.hostname = localhost
+database.default.database = lab_ci4
+database.default.username = root
+database.default.password = 
+database.default.DBDriver = MySQLI
 
-1. **Konfigurasi Database**: Menghubungkan aplikasi dengan database melalui file `.env` atau `app/Config/Database.php`.
-2. **Membuat Model**: Menggunakan `ArtikelModel` untuk mempermudah akses ke tabel `artikel`.
-3. **Membuat Controller**: Membuat logika untuk menampilkan, menambah, mengedit, dan menghapus artikel.
-4. **Membuat View**: Membuat antarmuka pengguna untuk formulir input dan daftar artikel.
-5. **Implementasi Fungsi**:
-* **Create**: Menambah data artikel baru melalui form.
-* **Read**: Menampilkan daftar artikel dari database.
-* **Update**: Mengubah data artikel yang sudah ada.
-* **Delete**: Menghapus data artikel berdasarkan `id`.
+```
 
 
+* **Penjelasan**: Pengaturan ini krusial agar *framework* CI4 mengenali lokasi database, *username*, dan *driver* yang digunakan (MySQLi) sehingga aplikasi dapat melakukan sinkronisasi data dengan server MySQL secara akurat.
 
-## 5. Dokumentasi Screenshot
+#### 2. Struktur Folder dan Pengorganisasian Kode
 
-*(Sesuai instruksi laporan, harap lampirkan screenshot berikut):*
+Pengaturan direktori yang sistematis dalam CodeIgniter 4 (CI4) adalah standar utama untuk menjaga kode tetap bersih (*clean code*) dan mudah dikelola. Pemisahan yang jelas antara logika bisnis dan tampilan sangat krusial agar setiap elemen kode tidak saling tumpang tindih.
 
-* **Screenshot 1**: Struktur tabel `artikel` di phpMyAdmin.
-* **Screenshot 2**: Tampilan daftar artikel (Halaman Read).
-* **Screenshot 3**: Tampilan formulir Tambah Artikel.
-* **Screenshot 4**: Tampilan saat mengedit artikel (Gambar 12.7 di modul).
-* **Screenshot 5**: Struktur folder proyek yang menunjukkan file Controller, Model, dan View.
+* **Folder `app/Models/**`: Tempat menyimpan `ArtikelModel.php` untuk memproses interaksi data ke database.
+* **Folder `app/Controllers/**`: Tempat menyimpan `Artikel.php` untuk logika alur CRUD.
+* **Folder `public/**`: Wadah aset statis seperti gambar artikel.
 
-## 6. Penjelasan Logika (Contoh Fungsi Hapus)
+#### 3. Implementasi Routing sebagai Peta Navigasi
 
-Salah satu implementasi penting pada modul ini adalah fungsi `delete()` di Controller Artikel:
+*Routing* menghubungkan URL yang diakses pengguna dengan *method* spesifik di *controller*. Dalam CRUD, *routing* menjadi sangat penting karena setiap aksi (tambah, edit, hapus) memiliki URL unik.
 
+* **Contoh Kodingan (Routing CRUD)**:
 ```php
-public function delete($id)
-{
+$routes->group('admin', function($routes) {
+    $routes->get('artikel', 'Artikel::admin_index');
+    $routes->add('artikel/add', 'Artikel::add');
+    $routes->add('artikel/edit/(:any)', 'Artikel::edit/$1');
+    $routes->get('artikel/delete/(:any)', 'Artikel::delete/$1');
+});
+
+```
+
+
+* **Penjelasan**: Fungsi `$routes->group` digunakan untuk mengelompokkan akses admin agar lebih terorganisir dan memudahkan pengelolaan keamanan rute secara terpusat.
+
+#### 4. Sinergi Controller, Model, dan View (CRUD)
+
+*Controller* berperan sebagai "otak" aplikasi yang menerima input, memprosesnya melalui *Model*, dan menampilkan hasilnya ke *View*.
+
+* **Penjelasan Kodingan (Operasi Delete)**:
+```php
+public function delete($id) {
     $artikel = new ArtikelModel();
-    $artikel->delete($id);
-    return redirect('admin/artikel');
+    $artikel->delete($id); // Menghapus data dari tabel berdasarkan ID
+    return redirect('admin/artikel'); // Kembali ke daftar admin setelah dihapus
 }
 
 ```
 
-*Penjelasan*: Fungsi ini menerima parameter `$id` dari link yang diklik pengguna, kemudian memanggil method `delete` dari `ArtikelModel` untuk menghapus baris data tersebut dari tabel, lalu mengalihkan halaman kembali ke daftar artikel.
 
----
+* **Return view**: Fungsi ini menyajikan antarmuka dengan menyuntikkan *array* data ke dalam *view* sehingga data artikel ditampilkan secara dinamis setelah proses pemrosesan data oleh *Model* selesai.
+
+#### 5. Efisiensi Layout melalui Templating
+
+Untuk menjaga konsistensi visual di seluruh halaman, CI4 mendukung fitur *templating* melalui `include`. Alih-alih menulis ulang kode HTML, kita cukup memanggil bagian *header* dan *footer*.
+
+* **Kodingan View (`admin_index.php`)**:
+```php
+<?= $this->include('template/admin_header'); ?>
+<?= $this->include('template/admin_footer'); ?>
+
+```
 
 
-Berikut adalah draf `README.md` yang disusun untuk laporan **Praktikum 3: View Layout dan View Cell** berdasarkan dokumen **"Web 2 - Modul Praktikum 2.pdf"**.
+* **Penjelasan**: Dengan cara ini, perubahan pada navigasi admin cukup dilakukan di satu file saja, yang secara otomatis akan merefleksikan perubahan tersebut di seluruh halaman yang menggunakan *template* tersebut.
 
----
+#### 6. Dokumentasi dan Analisis Konsep MVC
+
+Dokumentasi ini membuktikan bahwa setiap langkah, mulai dari pembuatan database hingga fungsi CRUD, telah berhasil diimplementasikan.
+
+* **Model**: Menangani interaksi data di `ArtikelModel.php` (penggunaan `$allowedFields` sangat penting untuk keamanan *insert* data).
+* **View**: Menampilkan antarmuka CRUD (tabel data, form tambah, form edit).
+* **Controller**: Menjadi jembatan (*bridge*) yang memproses logika data melalui *Model* dan menampilkannya di *View*.
+* **Bukti Praktikum**:
+* **Screenshot 1**: XAMPP Control Panel dengan Apache & MySQL dalam kondisi *running*.
+* **Screenshot 2**: Struktur folder proyek yang rapi sesuai standar CI4 di VS Code.
+* **Screenshot 3 & 4**: Tampilan halaman Daftar Artikel dan Detail Artikel yang sudah sinkron dengan *template*.
+
+
+
+Demikian penjelasan laporan praktikum yang telah mencakup seluruh tahapan, termasuk konfigurasi database dan integrasi logika CRUD secara menyeluruh.
 
 # Laporan Praktikum 3: View Layout dan View Cell (CodeIgniter 4)
 
